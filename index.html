@@ -79,6 +79,11 @@ h1.nm{font-size:1.9rem;margin:6px 0}
 .cam{position:absolute;right:-4px;bottom:0;width:44px;height:44px;border-radius:50%;background:#ffc20e;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
 .phl{color:#8c9bff;font-weight:700;letter-spacing:.03em}
 .btn+.btn{margin-top:10px}
+[hidden]{display:none!important}
+.idf{display:flex;align-items:stretch;margin-top:4px}
+.idf span{display:flex;align-items:center;padding:0 12px;background:var(--line);border-radius:10px 0 0 10px;font-weight:700;color:#f9c929;font-size:.95rem}
+.idf input{margin-top:0;border-radius:0 10px 10px 0}
+.idl{display:inline-block;line-height:1.15;font-weight:700}
 </style>
 </head>
 <body>
@@ -91,6 +96,10 @@ const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const inr = n => "₹" + Number(n || 0).toLocaleString("en-IN", {maximumFractionDigits: 2});
+const idRest = v => String(v || "").trim().toUpperCase().replace(/^OCTO7/, "");
+const fullId = v => idRest(v) ? "OCTO7" + idRest(v) : "";
+const idHtml = c => { c = String(c || ""); return c.startsWith("OCTO7") ? `<span class="idl">OCTO7<br>${esc(c.slice(5))}</span>` : esc(c); };
+const idField = (n, l, req = true, val = "") => `<label>${l}<div class="idf"><span>OCTO7</span><input name="${n}" value="${esc(val)}"${req ? " required" : ""} autocapitalize="characters" autocomplete="off"></div></label>`;
 const day = d => new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "short"});
 let me = null, cfg = {}, tab = "home", cart = {};
 
@@ -127,7 +136,7 @@ function authView(mode = "login") {
   app.innerHTML = `<main class="auth"><button class="link back" id="bk">Back</button>
   <h2 style="font-size:1.6rem;margin:6px 0 12px">${reg ? "New member registration" : "Member login"}</h2>
   <form id="f" class="card">
-    ${reg ? `<label>Sponsor ID<input name="sp" required autocapitalize="characters" autocomplete="off"></label>
+    ${reg ? `${idField("sp", "Sponsor ID")}
     <p class="note" style="margin:-6px 0 12px">You need a sponsor ID to register. If you do not have one, contact the company and they will give you one.</p>
     <label>Full name<input name="name" required autocomplete="name"></label>
     <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="tel"></label>` : ""}
@@ -145,7 +154,7 @@ function authView(mode = "login") {
     act(btn, async () => {
       const email = f.get("email").trim(), password = f.get("pw");
       if (reg) {
-        const sp = f.get("sp").trim().toUpperCase();
+        const sp = fullId(f.get("sp"));
         if (!(await call(sb.rpc("check_sponsor", {p_code: sp})))) { toast("Sponsor ID not found. Check it or contact the company.", true); return; }
         const {data, error} = await sb.auth.signUp({email, password, options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim(), sponsor_code: sp, side: f.get("side")}}});
         if (error) { toast(error.message, true); return; }
@@ -200,15 +209,15 @@ function placeView(sp0 = "", side0 = "L") {
   app.innerHTML = `<main class="auth"><h1>Join the team</h1>
   <p class="mut">Enter the member ID of the person who invited you, and choose where you sit under them.</p>
   <form id="f" class="card">
-    <label>Sponsor ID<input name="sp" required value="${esc(sp0)}" autocapitalize="characters"></label>
-    <label>Place under member ID <span class="note">(leave empty to sit directly under your sponsor)</span><input name="pa" autocapitalize="characters"></label>
+    ${idField("sp", "Sponsor ID", true, idRest(sp0))}
+    ${idField("pa", 'Place under member ID <span class="note">(leave empty to sit directly under your sponsor)</span>', false)}
     <label>Side<select name="side"><option value="L"${side0 !== "R" ? " selected" : ""}>Left</option><option value="R"${side0 === "R" ? " selected" : ""}>Right</option></select></label>
     <button class="btn">Confirm my place</button>
   </form><button class="link" id="lo">Log out</button></main>`;
   $("#lo").onclick = logout;
   $("#f").onsubmit = e => {
     e.preventDefault();
-    const f = new FormData(e.target), sp = f.get("sp").trim().toUpperCase(), pa = f.get("pa").trim().toUpperCase() || sp;
+    const f = new FormData(e.target), sp = fullId(f.get("sp")), pa = fullId(f.get("pa")) || sp;
     act($(".btn"), async () => {
       await call(sb.rpc("register_placement", {p_parent_code: pa, p_side: f.get("side"), p_sponsor_code: sp}));
       await loadMe();
@@ -255,7 +264,7 @@ function render() {
   P.f().catch(() => {});
 }
 async function portal() {
-  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm">Welcome, ${esc(me.full_name || "Member")}</h1><p class="id">ID: ${esc(me.member_code)}</p>
+  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm">Welcome, ${esc(me.full_name || "Member")}</h1><p class="id" style="font-size:1.3rem">${idHtml(me.member_code)}</p>
   ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
 }
 async function menu() {
@@ -286,7 +295,7 @@ async function coupons() {
 }
 function newreg() {
   $("#v").innerHTML = `<div class="card"><h2>Add a new member</h2><p>Ask the new member to open this app and choose <b>New Member Registration</b>, then enter your member ID as the sponsor ID.</p>
-  <p class="id" style="font-size:1.5rem;font-weight:700">${esc(me.member_code)}</p><button class="btn" id="cp">Copy my member ID</button></div>`;
+  <p class="id" style="font-size:1.5rem">${idHtml(me.member_code)}</p><button class="btn" id="cp">Copy my member ID</button></div>`;
   $("#cp").onclick = () => navigator.clipboard?.writeText(me.member_code).then(() => toast("Member ID copied."), () => toast("Could not copy.", true));
 }
 function password() {
@@ -382,6 +391,7 @@ async function wallet() {
 
 const val = x => x || "Not provided";
 const fld = (l, x, c = "") => `<div class="card f"><span class="note">${l}</span><b class="${c}">${esc(val(x))}</b></div>`;
+const fldH = (l, h, c = "") => `<div class="card f"><span class="note">${l}</span><b class="${c}">${h}</b></div>`;
 const fmt = d => d ? new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "long", year: "numeric"}) : "";
 function compress(file, max = 640) {
   return new Promise((res, rej) => {
@@ -399,8 +409,8 @@ async function profile() {
   let url = "";
   if (me.photo_path) url = (await sb.storage.from("avatars").createSignedUrl(me.photo_path, 3600)).data?.signedUrl || "";
   $("#v").innerHTML = `<div class="card ctr"><div class="av">${url ? `<img src="${esc(url)}" alt="Profile photo">` : esc((me.full_name || "M")[0].toUpperCase())}<label for="ph" class="cam" aria-label="Change photo">📷</label></div>
-    <input type="file" id="ph" accept="image/*" hidden><label for="ph" class="phl">Add / edit profile photo</label>
-    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="id" style="font-size:1.25rem;font-weight:700;margin:0 0 4px">${esc(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
+    <input type="file" id="ph" accept="image/*" hidden>
+    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="id" style="font-size:1.25rem;margin:0 0 6px">${idHtml(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
   <h3 class="sec">PROFILE OVERVIEW</h3>${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}${fld("Location", me.city)}
   <button class="btn" id="od">OPEN PROFILE DETAILS</button>`;
   $("#od").onclick = () => go("pdetails");
@@ -416,11 +426,10 @@ async function profile() {
 }
 async function pdetails() {
   const sp = ((await sb.rpc("get_my_sponsor")).data || [])[0];
-  $("#v").innerHTML = `<div class="card"><b class="id" style="font-size:1.4rem">${esc(me.member_code)}</b><br><b class="nm" style="font-size:1.25rem">${esc(me.full_name || "Member")}</b><p class="mut" style="margin-top:6px">Account status: ${esc(me.status)}</p></div>
-  <h3 class="sec">Personal Information</h3>${fld("Full name", me.full_name, "nm")}${fld("Date of birth", me.dob)}${fld("Gender", me.gender)}${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}
+  $("#v").innerHTML = `<h3 class="sec">Personal Information</h3>${fld("Full name", me.full_name, "nm")}${fld("Date of birth", me.dob)}${fld("Gender", me.gender)}${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}
   <h3 class="sec">Address Details</h3>${fld("House / building", me.house)}${fld("Street / area", me.street)}${fld("City / town", me.city)}${fld("District", me.district)}${fld("State", me.state)}${fld("Pincode", me.pincode)}${fld("Country", me.country)}
   <h3 class="sec">Nominee Details</h3>${fld("Nominee full name", me.nominee_name, "nm")}${fld("Relationship with member", me.nominee_relation)}${fld("Date of birth", me.nominee_dob)}${fld("Gender", me.nominee_gender)}${fld("Mobile number", me.nominee_mobile)}${fld("Email address", me.nominee_email)}${fld("Complete address", me.nominee_address)}
-  <h3 class="sec">Account Details</h3>${fld("Member ID", me.member_code, "id")}${fld("Sponsor ID", sp?.member_code || "Not assigned", "id")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
+  <h3 class="sec">Account Details</h3>${fldH("Member ID", idHtml(me.member_code), "id")}${fldH("Sponsor ID", sp?.member_code ? idHtml(sp.member_code) : "Not assigned", "id")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
   <h3 class="sec">Account Security</h3>${fld("Email verification", authUser?.email_confirmed_at ? "Verified" : "Not verified")}${fld("Mobile verification", "Not verified / unavailable")}
   <button class="btn" id="ed">EDIT PROFILE DETAILS</button>`;
   $("#ed").onclick = () => go("pedit");
