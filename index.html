@@ -6,11 +6,10 @@
 <meta name="theme-color" content="#2b3a8f">
 <title>OCTO7</title>
 <style>
-:root{--bg:#f2f4fa;--card:#fff;--ink:#141a3a;--mut:#5b6280;--line:#dfe3f0;--brand:#2b3a8f;--on:#fff;--bad:#b3261e;--l:#2b3a8f;--r:#c98a00;color-scheme:light}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1124;--card:#171b38;--ink:#eceefb;--mut:#9aa1c4;--line:#262b52;--brand:#8c9bff;--on:#0e1124;--bad:#ff8a80;--l:#8c9bff;--r:#f0b429;color-scheme:dark}}
+:root{--bg:#0a1a33;--card:#1a2740;--ink:#f1f4fb;--mut:#a9b4cc;--line:#2a3a5c;--brand:#ffc20e;--on:#16130a;--bad:#ff8a80;--l:#6c8cff;--r:#ffc20e;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
-body{padding:env(safe-area-inset-top) 0 0}
+body{padding:0}
 header{display:flex;justify-content:space-between;align-items:baseline;max-width:560px;margin:0 auto;padding:14px 16px 4px}
 header span{color:var(--mut);font-size:.9rem;font-variant-numeric:tabular-nums}
 main{max-width:560px;margin:0 auto;padding:8px 16px calc(92px + env(safe-area-inset-bottom))}
@@ -19,7 +18,7 @@ h2{font-size:1.05rem;margin:0 0 10px}
 p{margin:0 0 8px}
 .mut,.note{color:var(--mut);font-size:.9rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
-.hero{background:var(--brand);color:var(--on);border-radius:22px;padding:18px;margin:0 0 12px}
+.hero{background:#0f4aa0;color:#fff;border-radius:22px;padding:18px;margin:0 0 12px}
 .bal{font-size:2.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
 .bar{display:flex;gap:3px;height:20px;margin:6px 0}
 .bar i{background:var(--l);border-radius:10px 4px 4px 10px;min-width:6px}
@@ -35,7 +34,7 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 .row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
 .pos{color:#1b7f3b;font-weight:600}.neg{color:var(--bad);font-weight:600}
-@media(prefers-color-scheme:dark){.pos{color:#7ddc9a}}
+.pos{color:#7ddc9a}
 .qty{display:flex;align-items:center;gap:12px}
 .qty button{width:38px;height:38px;border-radius:19px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:1.2rem}
 .qty span{min-width:1.5em;text-align:center;font-variant-numeric:tabular-nums}
@@ -46,6 +45,40 @@ nav button{flex:1;padding:14px 4px;background:none;border:0;color:var(--mut);fon
 nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--brand)}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:528px;margin:auto;padding:12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}#toast.bad{background:var(--bad);color:#fff}
+.back{padding:14px 0 0;text-decoration:none}
+.wel{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:20px;text-align:center;padding:max(28px,env(safe-area-inset-top)) 24px max(22px,env(safe-area-inset-bottom));background:radial-gradient(130% 55% at 50% 30%,#18356f 0,#0a1233 58%,#050816 100%) #050816;color:#fff}
+.wel .hd{padding-top:3vh}
+.wel .hd small{display:block;font-size:1rem;color:#b9c4ee;letter-spacing:.08em}
+.wel .hd b{display:block;font-size:3.4rem;line-height:1.05;letter-spacing:.07em;font-weight:800}
+.wel .lg{width:min(54vw,210px);aspect-ratio:1;border-radius:50%;box-shadow:0 0 90px 14px rgba(60,110,230,.38)}
+.wel .lg img{display:block;width:100%;height:100%}
+.wel .slogan{font:italic 1.35rem/1.3 Georgia,"Times New Roman",serif;color:#f0cf7d;margin:0}
+.wel .sub{color:#c9d3f5;font-size:.95rem;max-width:30ch;margin:6px auto 0}
+.wel .acts{width:100%;max-width:420px}
+.wb{display:block;width:100%;padding:16px;border-radius:30px;font:inherit;font-weight:700;font-size:1.1rem;margin:0 0 12px;border:2px solid #e9c46a}
+.wb.g{background:linear-gradient(#f3d98b,#d9ae4a);color:#1a1405}
+.wb.p{background:transparent;color:#f0cf7d}
+.wel .nt{color:#aab6e6;font-size:.85rem;margin:2px 0 0}
+.wel .ft{color:#c9d3f5;font-size:.85rem;letter-spacing:.05em}
+.tb{display:flex;align-items:center;gap:12px;background:#0f4aa0;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;font-size:1.25rem;position:sticky;top:0;z-index:5}
+.tb b{flex:1;font-weight:500}
+.menu{background:#ffc20e;color:#16130a;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
+.bk{background:none;border:0;color:#fff;font-size:1.7rem;padding:2px 8px;line-height:1}
+.mi{display:flex;align-items:center;gap:18px;width:100%;padding:15px 8px;background:none;border:0;color:var(--ink);font:inherit;font-size:1.1rem;text-align:left;letter-spacing:.02em}
+.mi span{width:32px;text-align:center;font-size:1.4rem}
+.pt{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.plogo{width:min(46vw,190px);margin-bottom:18px}
+.nm{color:#19f3ff;font-weight:700}
+.id{color:#f9c929}
+h1.nm{font-size:1.9rem;margin:6px 0}
+.f{display:block}.f b{display:block;font-size:1.05rem;margin-top:2px;word-break:break-word}
+.sec{color:#f9c929;font-size:1.15rem;margin:22px 0 10px}
+.ctr{text-align:center}
+.av{position:relative;width:120px;height:120px;margin:4px auto 10px;border-radius:50%;background:#0f4aa0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.cam{position:absolute;right:-4px;bottom:0;width:44px;height:44px;border-radius:50%;background:#ffc20e;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.phl{color:#8c9bff;font-weight:700;letter-spacing:.03em}
+.btn+.btn{margin-top:10px}
 </style>
 </head>
 <body>
@@ -76,19 +109,35 @@ async function act(btn, fn) {
   try { await fn(); } catch (e) {} finally { btn.disabled = false; }
 }
 
-/* ---------- sign in / register ---------- */
+/* ---------- welcome / sign in / register ---------- */
+function welcomeView() {
+  app.innerHTML = `<div class="wel"><div class="hd"><small>Welcome to</small><b>OCTO7</b></div>
+  <div><div class="lg"><img src="logo.png" alt="OCTO7 logo" width="210" height="210" onerror="this.parentNode.remove()"></div>
+  <p class="slogan" style="margin-top:20px">Together for a better tomorrow</p>
+  <p class="sub">Quality garments, entrepreneurship and a growing network.</p></div>
+  <div class="acts"><button class="wb g" id="bl">Member Login</button><button class="wb p" id="br">New Member Registration</button>
+  <p class="nt">A sponsor ID is needed to register. No sponsor ID? Contact the company.</p></div>
+  <div class="ft">OCTO7 India • Dream • Network • Grow</div></div>`;
+  $("#bl").onclick = () => authView("login");
+  $("#br").onclick = () => authView("reg");
+}
+
 function authView(mode = "login") {
   const reg = mode === "reg";
-  app.innerHTML = `<main class="auth"><h1>OCTO7</h1>
-  <p class="mut">Garments, your team and your earnings in one place.</p>
+  app.innerHTML = `<main class="auth"><button class="link back" id="bk">Back</button>
+  <h2 style="font-size:1.6rem;margin:6px 0 12px">${reg ? "New member registration" : "Member login"}</h2>
   <form id="f" class="card">
-    ${reg ? `<label>Full name<input name="name" required autocomplete="name"></label>
+    ${reg ? `<label>Sponsor ID<input name="sp" required autocapitalize="characters" autocomplete="off"></label>
+    <p class="note" style="margin:-6px 0 12px">You need a sponsor ID to register. If you do not have one, contact the company and they will give you one.</p>
+    <label>Full name<input name="name" required autocomplete="name"></label>
     <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="tel"></label>` : ""}
     <label>Email<input name="email" type="email" required autocomplete="email"></label>
     <label>Password<input name="pw" type="password" minlength="6" required autocomplete="${reg ? "new-password" : "current-password"}"></label>
-    <button class="btn">${reg ? "Create account" : "Log in"}</button>
+    ${reg ? `<label>Side under your sponsor<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>` : ""}
+    <button class="btn">${reg ? "Register" : "Log in"}</button>
   </form>
   <button class="link" id="sw">${reg ? "I already have an account" : "New member? Register"}</button></main>`;
+  $("#bk").onclick = welcomeView;
   $("#sw").onclick = () => authView(reg ? "login" : "reg");
   $("#f").onsubmit = e => {
     e.preventDefault();
@@ -96,10 +145,12 @@ function authView(mode = "login") {
     act(btn, async () => {
       const email = f.get("email").trim(), password = f.get("pw");
       if (reg) {
-        const {data, error} = await sb.auth.signUp({email, password, options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim()}}});
+        const sp = f.get("sp").trim().toUpperCase();
+        if (!(await call(sb.rpc("check_sponsor", {p_code: sp})))) { toast("Sponsor ID not found. Check it or contact the company.", true); return; }
+        const {data, error} = await sb.auth.signUp({email, password, options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim(), sponsor_code: sp, side: f.get("side")}}});
         if (error) { toast(error.message, true); return; }
         if (data.session) await loadMe();
-        else { toast("Account created. Confirm the email we sent, then log in."); authView("login"); }
+        else { toast("Registration received. Confirm the email we sent, then log in."); authView("login"); }
       } else {
         const {error} = await sb.auth.signInWithPassword({email, password});
         if (error) { toast(error.message, true); return; }
@@ -112,30 +163,46 @@ function authView(mode = "login") {
 /* ---------- after sign in ---------- */
 async function loadMe() {
   const {data: {user}} = await sb.auth.getUser();
-  if (!user) return authView();
+  if (!user) return welcomeView();
   const {data} = await sb.from("members").select("*").eq("id", user.id).maybeSingle();
-  if (!data) { toast("Your profile is not ready yet. Try again in a moment.", true); return authView(); }
+  if (!data) { toast("Your profile is not ready yet. Try again in a moment.", true); return welcomeView(); }
   me = data;
   const s = await sb.from("app_settings").select("key,value");
   cfg = Object.fromEntries((s.data || []).map(r => [r.key, r.value]));
   if (me.status === "blocked") return gate("Account blocked", "Please contact the company help line.");
-  if (!me.parent_id && me.status !== "active") return placeView();
+  if (!me.parent_id && me.status !== "active") return placeFlow(user);
   if (me.status === "pending") return activateView();
-  shell();
+  authUser = user;
+  isAdmin = (await sb.rpc("is_admin")).data === true;
+  page = "portal"; hist = [];
+  render();
 }
-function gate(title, text) {
-  app.innerHTML = `<main class="auth"><h1>${esc(title)}</h1><p class="mut">${esc(text)}</p><button class="link" id="lo">Log out</button></main>`;
+function gate(title, text, again) {
+  app.innerHTML = `<main class="auth"><h1>${esc(title)}</h1><p class="mut">${esc(text)}</p>
+  ${again ? '<button class="btn" id="ag">Check again</button>' : ""}<button class="link" id="lo">Log out</button></main>`;
   $("#lo").onclick = logout;
+  if (again) $("#ag").onclick = () => loadMe();
 }
-async function logout() { await sb.auth.signOut(); me = null; authView(); }
+async function placeFlow(user) {
+  const md = user.user_metadata || {}, sp = String(md.sponsor_code || "").toUpperCase();
+  if (sp && sp === String(cfg.company_member_code || "").toUpperCase())
+    return gate("Registration received", "The company will place you in the team and then activate your ID. Please check back soon.", true);
+  if (sp && md.side) {
+    const {error} = await sb.rpc("register_placement", {p_parent_code: sp, p_side: md.side, p_sponsor_code: sp});
+    if (!error) return loadMe();
+    toast(error.message, true);
+  }
+  placeView(sp, md.side);
+}
+async function logout() { await sb.auth.signOut(); me = null; page = "portal"; hist = []; welcomeView(); }
 
-function placeView() {
+function placeView(sp0 = "", side0 = "L") {
   app.innerHTML = `<main class="auth"><h1>Join the team</h1>
   <p class="mut">Enter the member ID of the person who invited you, and choose where you sit under them.</p>
   <form id="f" class="card">
-    <label>Sponsor ID<input name="sp" required placeholder="O71000001" autocapitalize="characters"></label>
+    <label>Sponsor ID<input name="sp" required value="${esc(sp0)}" autocapitalize="characters"></label>
     <label>Place under member ID <span class="note">(leave empty to sit directly under your sponsor)</span><input name="pa" autocapitalize="characters"></label>
-    <label>Side<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>
+    <label>Side<select name="side"><option value="L"${side0 !== "R" ? " selected" : ""}>Left</option><option value="R"${side0 === "R" ? " selected" : ""}>Right</option></select></label>
     <button class="btn">Confirm my place</button>
   </form><button class="link" id="lo">Log out</button></main>`;
   $("#lo").onclick = logout;
@@ -164,14 +231,70 @@ function activateView() {
 }
 
 /* ---------- main app ---------- */
-function shell() {
-  const tabs = [["home", "Home"], ["shop", "Shop"], ["team", "Team"], ["wallet", "Wallet"], ["me", "Profile"]];
-  app.innerHTML = `<header><b>${esc(me.full_name || "Member")}</b><span>${esc(me.member_code)}</span></header>
-  <main id="v"></main>
-  <nav>${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("")}</nav>`;
-  app.querySelectorAll("nav button").forEach(b => b.onclick = () => { tab = b.dataset.t; shell(); });
-  $("#v").innerHTML = '<p class="mut">Loading…</p>';
-  ({home, shop, team, wallet, me: profile})[tab]().catch(() => {});
+let page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "";
+const NAV = [["portal", "Home"], ["shop", "Shop"], ["tree", "Team"], ["wallet", "Wallet"], ["profile", "Profile"]];
+const MENU = [["🏠", "Home", "portal"], ["🛡️", "Founder Administration", "soon", 1], ["📊", "Dashboard", "dash"], ["👤", "My Profile", "profile"],
+  ["🌳", "Binary Genealogy Tree", "tree"], ["➕", "New Member Registration", "newreg"], ["🛍️", "Products & Catalog", "shop"], ["🛒", "My Purchases / Orders", "orders"],
+  ["👛", "Wallet & Withdrawals", "wallet"], ["🏦", "Bank Details & KYC", "soon"], ["✅", "KYC Verification", "soon"], ["💯", "Commission Payouts", "payouts"],
+  ["🎟️", "My Coupons & Pins", "coupons"], ["👥", "Team Members", "tree"], ["📞", "Help Line & Support", "soon"], ["🔔", "Notifications", "notes"],
+  ["🔑", "Change Password", "password"], ["🚪", "Logout", "logout"]];
+const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu", f: menu}, dash: {t: "Dashboard", f: home}, profile: {t: "My Profile", f: profile},
+  pdetails: {t: "My Profile Details", f: pdetails}, pedit: {t: "Edit Profile Details", f: pedit}, tree: {t: "Binary Genealogy Tree", f: team}, newreg: {t: "New Member Registration", f: newreg},
+  shop: {t: "Products & Catalog", f: shop}, orders: {t: "My Purchases / Orders", f: orders}, wallet: {t: "Wallet & Withdrawals", f: wallet}, payouts: {t: "Commission Payouts", f: payouts},
+  coupons: {t: "My Coupons & Pins", f: coupons}, notes: {t: "Notifications", f: notes}, password: {t: "Change Password", f: password}, soon: {t: "", f: soon}};
+
+function go(p, push = true) { if (push && page !== p) hist.push(page); page = p; render(); window.scrollTo(0, 0); }
+function render() {
+  const P = PAGES[page];
+  app.innerHTML = `<div class="tb">${page === "portal" ? '<b>Member Portal</b><button class="menu" id="mn">☰ Menu</button>' : `<button class="bk" id="bk" aria-label="Back">←</button><b>${esc(page === "soon" ? soonT : P.t)}</b>`}</div>
+  <main id="v"><p class="mut">Loading…</p></main>
+  ${page === "menu" ? "" : `<nav>${NAV.map(([k, l]) => `<button data-p="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("")}</nav>`}`;
+  if ($("#mn")) $("#mn").onclick = () => go("menu");
+  if ($("#bk")) $("#bk").onclick = () => go(hist.pop() || "portal", false);
+  app.querySelectorAll("nav button").forEach(b => b.onclick = () => { hist = b.dataset.p === "portal" ? [] : ["portal"]; go(b.dataset.p, false); });
+  P.f().catch(() => {});
+}
+async function portal() {
+  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm">Welcome, ${esc(me.full_name || "Member")}</h1><p class="id">ID: ${esc(me.member_code)}</p>
+  ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+}
+async function menu() {
+  const items = MENU.filter(m => !m[3] || isAdmin);
+  $("#v").innerHTML = items.map((m, i) => `<button class="mi" data-i="${i}"><span>${m[0]}</span>${esc(m[1])}</button>`).join("");
+  $("#v").querySelectorAll(".mi").forEach(b => b.onclick = () => {
+    const m = items[b.dataset.i];
+    if (m[2] === "logout") return logout();
+    soonT = m[1]; go(m[2]);
+  });
+}
+async function soon() { $("#v").innerHTML = `<div class="card"><h2>${esc(soonT)}</h2><p class="mut">This section is being built and will be added in the next update.</p></div>`; }
+async function orders() {
+  const o = await call(sb.from("orders").select("*").order("created_at", {ascending: false}).limit(30));
+  $("#v").innerHTML = `<div class="card">${o.map(x => `<div class="row"><span>${day(x.created_at)}</span><span class="tag">${STATUS[x.status] || x.status}</span><b>${inr(x.total)}</b></div>`).join("") || '<p class="mut">You have not placed an order yet.</p>'}</div>`;
+}
+async function payouts() {
+  const t = await call(sb.from("wallet_transactions").select("*").eq("member_id", me.id).in("kind", ["binary_commission", "sponsor_bonus"]).order("created_at", {ascending: false}).limit(50));
+  $("#v").innerHTML = `<div class="card">${t.map(x => `<div class="row"><span>${esc(KIND[x.kind] || x.kind)}<br><span class="note">${day(x.created_at)}</span></span><span class="pos">+${inr(x.amount)}</span></div>`).join("") || '<p class="mut">Your commission payouts will be listed here.</p>'}</div>`;
+}
+async function notes() {
+  const n = await call(sb.from("notifications").select("*").order("created_at", {ascending: false}).limit(50));
+  $("#v").innerHTML = `<div class="card">${n.map(x => `<div class="row"><div><b>${esc(x.title)}</b><br><span class="note">${esc(x.body)}</span></div><span class="note">${day(x.created_at)}</span></div>`).join("") || '<p class="mut">Nothing new yet.</p>'}</div>`;
+}
+async function coupons() {
+  const c = await call(sb.from("coupon_pins").select("*").eq("owner_id", me.id).order("created_at", {ascending: false}).limit(100));
+  $("#v").innerHTML = `<div class="card">${c.map(x => `<div class="row"><span><b>${esc(x.pin_code)}</b><br><span class="note">${x.coupon_type === "redeem" ? "Redeem" : "Discount"} coupon, ${inr(x.face_value)}</span></span><span class="tag">${x.status === "used" ? "Used" : "Unused"}</span></div>`).join("") || '<p class="mut">Pins credited to you by the company appear here.</p>'}</div>`;
+}
+function newreg() {
+  $("#v").innerHTML = `<div class="card"><h2>Add a new member</h2><p>Ask the new member to open this app and choose <b>New Member Registration</b>, then enter your member ID as the sponsor ID.</p>
+  <p class="id" style="font-size:1.5rem;font-weight:700">${esc(me.member_code)}</p><button class="btn" id="cp">Copy my member ID</button></div>`;
+  $("#cp").onclick = () => navigator.clipboard?.writeText(me.member_code).then(() => toast("Member ID copied."), () => toast("Could not copy.", true));
+}
+function password() {
+  $("#v").innerHTML = `<form id="pw" class="card"><label>New password<input name="p" type="password" minlength="6" required autocomplete="new-password"></label><button class="btn">Update password</button></form>`;
+  $("#pw").onsubmit = e => {
+    e.preventDefault();
+    act($(".btn"), async () => { await call(sb.auth.updateUser({password: new FormData(e.target).get("p")})); e.target.reset(); toast("Password updated."); });
+  };
 }
 
 async function home() {
@@ -257,38 +380,71 @@ async function wallet() {
   };
 }
 
+const val = x => x || "Not provided";
+const fld = (l, x, c = "") => `<div class="card f"><span class="note">${l}</span><b class="${c}">${esc(val(x))}</b></div>`;
+const fmt = d => d ? new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "long", year: "numeric"}) : "";
+function compress(file, max = 640) {
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+      c.toBlob(b => b ? res(b) : rej(new Error("Could not read the image.")), "image/jpeg", 0.8);
+    };
+    img.onerror = () => rej(new Error("Could not read the image.")); img.src = u;
+  });
+}
 async function profile() {
-  $("#v").innerHTML = `<form id="pf" class="card"><h2>My profile</h2>
-    <label>Full name<input name="full_name" value="${esc(me.full_name)}" required></label>
-    <label>Mobile number<input name="mobile" inputmode="tel" value="${esc(me.mobile)}"></label>
-    <label>Address<input name="address" value="${esc(me.address)}"></label>
-    <label>Nominee name<input name="nominee_name" value="${esc(me.nominee_name)}"></label>
-    <label>Nominee relation<input name="nominee_relation" value="${esc(me.nominee_relation)}"></label>
-    <button class="btn">Save changes</button></form>
-  <form id="pw" class="card"><h2>Change password</h2>
-    <label>New password<input name="p" type="password" minlength="6" required autocomplete="new-password"></label>
-    <button class="btn">Update password</button></form>
-  <button class="link" id="lo">Log out</button>`;
-  $("#lo").onclick = logout;
-  $("#pf").onsubmit = e => {
-    e.preventDefault();
-    const v = Object.fromEntries(new FormData(e.target));
-    act($(".btn", e.target), async () => {
-      await call(sb.from("members").update(v).eq("id", me.id));
-      me = {...me, ...v}; toast("Changes saved.");
+  let url = "";
+  if (me.photo_path) url = (await sb.storage.from("avatars").createSignedUrl(me.photo_path, 3600)).data?.signedUrl || "";
+  $("#v").innerHTML = `<div class="card ctr"><div class="av">${url ? `<img src="${esc(url)}" alt="Profile photo">` : esc((me.full_name || "M")[0].toUpperCase())}<label for="ph" class="cam" aria-label="Change photo">📷</label></div>
+    <input type="file" id="ph" accept="image/*" hidden><label for="ph" class="phl">Add / edit profile photo</label>
+    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="id" style="font-size:1.25rem;font-weight:700;margin:0 0 4px">${esc(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
+  <h3 class="sec">PROFILE OVERVIEW</h3>${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}${fld("Location", me.city)}
+  <button class="btn" id="od">OPEN PROFILE DETAILS</button>`;
+  $("#od").onclick = () => go("pdetails");
+  $("#ph").onchange = e => {
+    const f = e.target.files[0]; if (!f) return;
+    act(e.target, async () => {
+      const b = await compress(f), path = `${me.id}/avatar.jpg`;
+      await call(sb.storage.from("avatars").upload(path, b, {upsert: true, contentType: "image/jpeg"}));
+      await call(sb.from("members").update({photo_path: path}).eq("id", me.id));
+      me.photo_path = path; toast("Photo updated."); await profile();
     });
   };
-  $("#pw").onsubmit = e => {
+}
+async function pdetails() {
+  const sp = ((await sb.rpc("get_my_sponsor")).data || [])[0];
+  $("#v").innerHTML = `<div class="card"><b class="id" style="font-size:1.4rem">${esc(me.member_code)}</b><br><b class="nm" style="font-size:1.25rem">${esc(me.full_name || "Member")}</b><p class="mut" style="margin-top:6px">Account status: ${esc(me.status)}</p></div>
+  <h3 class="sec">Personal Information</h3>${fld("Full name", me.full_name, "nm")}${fld("Date of birth", me.dob)}${fld("Gender", me.gender)}${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}
+  <h3 class="sec">Address Details</h3>${fld("House / building", me.house)}${fld("Street / area", me.street)}${fld("City / town", me.city)}${fld("District", me.district)}${fld("State", me.state)}${fld("Pincode", me.pincode)}${fld("Country", me.country)}
+  <h3 class="sec">Nominee Details</h3>${fld("Nominee full name", me.nominee_name, "nm")}${fld("Relationship with member", me.nominee_relation)}${fld("Date of birth", me.nominee_dob)}${fld("Gender", me.nominee_gender)}${fld("Mobile number", me.nominee_mobile)}${fld("Email address", me.nominee_email)}${fld("Complete address", me.nominee_address)}
+  <h3 class="sec">Account Details</h3>${fld("Member ID", me.member_code, "id")}${fld("Sponsor ID", sp?.member_code || "Not assigned", "id")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
+  <h3 class="sec">Account Security</h3>${fld("Email verification", authUser?.email_confirmed_at ? "Verified" : "Not verified")}${fld("Mobile verification", "Not verified / unavailable")}
+  <button class="btn" id="ed">EDIT PROFILE DETAILS</button>`;
+  $("#ed").onclick = () => go("pedit");
+}
+const EF = [["full_name", "Full name"], ["dob", "Date of birth", "date"], ["gender", "Gender", "sel:Male,Female,Other"], ["mobile", "Mobile number", "tel"],
+  ["house", "House / building"], ["street", "Street / area"], ["city", "City / town"], ["district", "District"], ["state", "State"], ["pincode", "Pincode", "tel"], ["country", "Country"],
+  ["nominee_name", "Nominee full name"], ["nominee_relation", "Relationship with member"], ["nominee_dob", "Nominee date of birth", "date"], ["nominee_gender", "Nominee gender", "sel:Male,Female,Other"],
+  ["nominee_mobile", "Nominee mobile number", "tel"], ["nominee_email", "Nominee email address", "email"], ["nominee_address", "Nominee complete address"]];
+async function pedit() {
+  $("#v").innerHTML = `<form id="ef" class="card">${EF.map(([k, l, t = "text"]) => t.startsWith("sel")
+    ? `<label>${l}<select name="${k}"><option value="">Not set</option>${t.slice(4).split(",").map(o => `<option${me[k] === o ? " selected" : ""}>${o}</option>`).join("")}</select></label>`
+    : `<label>${l}<input name="${k}" type="${t}" value="${esc(me[k])}"${k === "full_name" ? " required" : ""}></label>`).join("")}<button class="btn">Save changes</button></form>`;
+  $("#ef").onsubmit = e => {
     e.preventDefault();
-    act($(".btn", e.target), async () => {
-      await call(sb.auth.updateUser({password: new FormData(e.target).get("p")}));
-      e.target.reset(); toast("Password updated.");
+    const d = Object.fromEntries([...new FormData(e.target)].map(([k, x]) => [k, x.trim() || null]));
+    act($(".btn"), async () => {
+      await call(sb.from("members").update(d).eq("id", me.id));
+      me = {...me, ...d}; toast("Profile saved."); hist.pop(); go("pdetails", false);
     });
   };
 }
 
-sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") authView(); });
-sb.auth.getSession().then(({data}) => data.session ? loadMe() : authView());
+sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") welcomeView(); });
+sb.auth.getSession().then(({data}) => data.session ? loadMe() : welcomeView());
 </script>
 </body>
 </html>
