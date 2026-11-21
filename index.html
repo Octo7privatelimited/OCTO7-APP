@@ -249,8 +249,7 @@ let page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "";
 const NAV = [["portal", "Home"], ["shop", "Shop"], ["tree", "Team"], ["wallet", "Wallet"], ["profile", "Profile"]];
 const MENU = [["🏠", "Home", "portal"], ["🛡️", "Founder Administration", "soon", 1], ["📊", "Dashboard", "dash"], ["👤", "My Profile", "profile"],
   ["🌳", "Binary Genealogy Tree", "tree"], ["➕", "New Member Registration", "newreg"], ["🛍️", "Products & Catalog", "shop"], ["🛒", "My Purchases / Orders", "orders"],
-  ["👛", "Wallet & Withdrawals", "wallet"], ["🏦", "Bank Details & KYC", "soon"], ["✅", "KYC Verification", "soon"], ["💯", "Commission Payouts", "payouts"],
-  ["🎟️", "My Coupons & Pins", "coupons"], ["👥", "Team Members", "tree"], ["📞", "Help Line & Support", "soon"], ["🔔", "Notifications", "notes"],
+  ["👛", "Wallet & Withdrawals", "wallet"], ["🏦", "Bank Details & KYC", "soon"], ["🎟️", "My Coupons & Pins", "coupons"], ["👥", "Team Members", "tree"], ["📞", "Help Line & Support", "soon"], ["🔔", "Notifications", "notes"],
   ["🔑", "Change Password", "password"], ["🚪", "Logout", "logout"]];
 const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu", f: menu}, dash: {t: "Dashboard", f: home}, profile: {t: "My Profile", f: profile},
   pdetails: {t: "My Profile Details", f: pdetails}, pedit: {t: "Edit Profile Details", f: pedit}, tree: {t: "Binary Genealogy Tree", f: team}, newreg: {t: "New Member Registration", f: newreg},
@@ -440,15 +439,11 @@ async function removePhoto() {
 }
 function photoMenu(url) {
   const m = document.createElement("div"); m.className = "modal";
-  m.innerHTML = `<div class="sheet"><button class="btn" id="p1">Choose new photo</button>${url ? '<button class="btn" id="p2">Crop current photo</button><button class="btn" id="p3" style="background:var(--bad);color:#fff">Remove photo</button>' : ""}<button class="link" id="p0">Cancel</button></div>`;
+  m.innerHTML = `<div class="sheet"><button class="btn" id="p1">Choose new photo</button>${url ? '<button class="btn" id="p3" style="background:var(--bad);color:#fff">Remove photo</button>' : ""}<button class="link" id="p0">Cancel</button></div>`;
   document.body.appendChild(m);
   $("#p0", m).onclick = () => m.remove();
   $("#p1", m).onclick = () => { m.remove(); $("#ph").click(); };
   if (url) {
-    $("#p2", m).onclick = async () => {
-      m.remove();
-      try { cropper(URL.createObjectURL(await (await fetch(url)).blob()), savePhoto); } catch (e) { toast("Could not open the current photo.", true); }
-    };
     $("#p3", m).onclick = () => { m.remove(); removePhoto().catch(() => {}); };
   }
 }
