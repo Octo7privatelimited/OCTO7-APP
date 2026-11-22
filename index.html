@@ -89,6 +89,13 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .sheet{width:100%;max-width:560px;background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));text-align:center}
 .sheet canvas{width:280px;height:280px;border-radius:50%;touch-action:none;margin:0 auto 12px;display:block;background:#000}
 .sheet input[type=range]{padding:0;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.tile{--c:#ffc20e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:116px;padding:14px 10px;border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);font:inherit;font-size:.98rem;line-height:1.25;text-align:center;box-shadow:inset 0 4px 0 var(--c)}
+.tile span{font-size:2.1rem;line-height:1}
+.tile:nth-child(6n+2){--c:#19f3ff}.tile:nth-child(6n+3){--c:#7ddc9a}.tile:nth-child(6n+4){--c:#ff7ab2}.tile:nth-child(6n+5){--c:#8c9bff}.tile:nth-child(6n){--c:#ff9f43}
+.wl{color:#ff00ff}
+.pw{position:relative}.pw input{padding-right:54px}
+.eye{position:absolute;right:4px;top:calc(50% + 2px);transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:1.25rem}
 </style>
 </head>
 <body>
@@ -105,6 +112,12 @@ const idRest = v => String(v || "").trim().toUpperCase().replace(/^OCTO7/, "");
 const fullId = v => idRest(v) ? "OCTO7" + idRest(v) : "";
 const idHtml = c => { c = String(c || ""); return c.startsWith("OCTO7") ? `<span class="idl">OCTO7<br>${esc(c.slice(5))}</span>` : esc(c); };
 const idField = (n, l, req = true, val = "") => `<label>${l}<div class="idf"><span>OCTO7</span><input name="${n}" value="${esc(val)}"${req ? " required" : ""} autocapitalize="characters" autocomplete="off"></div></label>`;
+const pwf = (n, l, ac, min = 6) => `<label>${l}<div class="pw"><input name="${n}" type="password" minlength="${min}" required autocomplete="${ac}"><button type="button" class="eye" aria-label="Show">👁️</button></div></label>`;
+document.addEventListener("click", e => {
+  const b = e.target.closest(".eye"); if (!b) return;
+  const i = b.previousElementSibling, hide = i.type === "password";
+  i.type = hide ? "text" : "password"; b.textContent = hide ? "🙈" : "👁️"; b.setAttribute("aria-label", hide ? "Hide" : "Show");
+});
 const day = d => new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "short"});
 let me = null, cfg = {}, tab = "home", cart = {};
 
@@ -146,7 +159,7 @@ function authView(mode = "login") {
     <label>Full name<input name="name" required autocomplete="name"></label>
     <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="tel"></label>` : ""}
     ${reg ? '<label>Email<input name="email" type="email" required autocomplete="email"></label>' : idField("uid", "User ID")}
-    <label>Password<input name="pw" type="password" minlength="6" required autocomplete="${reg ? "new-password" : "current-password"}"></label>
+    ${pwf("pw", "Password", reg ? "new-password" : "current-password")}
     ${reg ? `<label>Side under your sponsor<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>` : ""}
     <button class="btn">${reg ? "Register" : "Log in"}</button>
   </form>
@@ -236,7 +249,7 @@ function placeView(sp0 = "", side0 = "L") {
 function activateView() {
   app.innerHTML = `<main class="auth"><h1>Activate your ID</h1>
   <p class="mut">Enter the secret pin you received from the company or your team leader.</p>
-  <form id="f" class="card"><label>Activation pin<input name="pin" required autocapitalize="characters" autocomplete="off"></label>
+  <form id="f" class="card">${pwf("pin", "Activation pin", "off", 1)}
   <button class="btn">Activate</button></form><button class="link" id="lo">Log out</button></main>`;
   $("#lo").onclick = logout;
   $("#f").onsubmit = e => {
@@ -268,21 +281,25 @@ function render() {
   const P = PAGES[page], T = page === "fa" ? faTitle() : page === "soon" ? soonT : P.t;
   app.innerHTML = `<div class="tb">${page === "portal" ? '<b>Member Portal</b><button class="menu" id="mn">☰ Menu</button>' : `<button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b>`}</div>
   <main id="v"><p class="mut">Loading…</p></main>
-  ${page === "menu" ? "" : `<nav>${NAV.map(([k, l]) => `<button data-p="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("")}</nav>`}`;
+  <nav>${NAV.map(([k, l]) => `<button data-p="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("")}</nav>`;
   if ($("#mn")) $("#mn").onclick = () => go("menu");
   if ($("#bk")) $("#bk").onclick = () => { if (page === "fa" && faPath.length) { faPath.pop(); render(); } else go(hist.pop() || "portal", false); };
   app.querySelectorAll("nav button").forEach(b => b.onclick = () => { hist = b.dataset.p === "portal" ? [] : ["portal"]; go(b.dataset.p, false); });
   Promise.resolve().then(() => P.f()).catch(() => {});
 }
 async function portal() {
-  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm">Welcome, ${esc(me.full_name || "Member")}</h1><p class="id" style="font-size:1.3rem">${idHtml(me.member_code)}</p>
+  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1><p class="id" style="font-size:1.3rem">${idHtml(me.member_code)}</p>
   ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
 }
+function tiles(items, click) {
+  $("#v").innerHTML = `<div class="grid">${items.map(([ic, l], i) => `<button class="tile" data-i="${i}"><span>${ic}</span>${esc(l)}</button>`).join("")}</div>`;
+  $("#v").querySelectorAll(".tile").forEach(b => b.onclick = () => click(+b.dataset.i));
+}
+const HIDE = ["Home", "My Profile", "Products & Catalog", "Wallet & Withdrawals", "Team Members"];
 async function menu() {
-  const items = MENU.filter(m => !m[3] || isAdmin);
-  $("#v").innerHTML = items.map((m, i) => `<button class="mi" data-i="${i}"><span>${m[0]}</span>${esc(m[1])}</button>`).join("");
-  $("#v").querySelectorAll(".mi").forEach(b => b.onclick = () => {
-    const m = items[b.dataset.i];
+  const items = MENU.filter(m => (!m[3] || isAdmin) && !HIDE.includes(m[1]));
+  tiles(items.map(m => [m[0], m[1]]), i => {
+    const m = items[i];
     if (m[2] === "logout") return logout();
     soonT = m[1]; if (m[2] === "fa") faPath = []; go(m[2]);
   });
@@ -313,7 +330,7 @@ function newreg() {
   $("#cp").onclick = () => navigator.clipboard?.writeText(me.member_code).then(() => toast("Member ID copied."), () => toast("Could not copy.", true));
 }
 function password() {
-  $("#v").innerHTML = `<form id="pw" class="card"><label>New password<input name="p" type="password" minlength="6" required autocomplete="new-password"></label><button class="btn">Update password</button></form>`;
+  $("#v").innerHTML = `<form id="pw" class="card">${pwf("p", "New password", "new-password")}<button class="btn">Update password</button></form>`;
   $("#pw").onsubmit = e => {
     e.preventDefault();
     act($(".btn"), async () => { await call(sb.auth.updateUser({password: new FormData(e.target).get("p")})); e.target.reset(); toast("Password updated."); });
@@ -570,13 +587,15 @@ async function mmap(ids) {
   return Object.fromEntries((data || []).map(m => [m.id, m]));
 }
 const mc = m => m ? `${esc(m.member_code)} ${esc(m.full_name || "")}` : "";
+const FAI = {"Human Resource (HR)": "👥", "Administration": "🛠️", "Accounts & Finance": "💰", "Coupons & Pins Management": "🎟️", "Sales Department": "📈", "Marketing Department": "📣",
+  "Member Relations": "🤝", "Network Department": "🌐", "Customer Support": "🎧", "IT & Software": "💻", "Product Management": "📦", "Purchase & Procurement": "🧾", "Inventory & Warehouse": "🏬",
+  "Logistics & Distribution": "🚚", "Legal & Compliance": "⚖️", "Quality Control": "🔍", "Training & Development": "🎓", "BV Calculation & Matching": "📊", "Withdrawal Management": "🏧", "Member Wallet": "👛"};
 async function fa() {
   adm();
   let list = FA; for (const i of faPath) list = list[i][1];
-  $("#v").innerHTML = list.map((m, i) => `<button class="mi" data-i="${i}">${esc(m[0])}</button>`).join("");
-  $("#v").querySelectorAll(".mi").forEach(b => b.onclick = () => {
-    const m = list[b.dataset.i];
-    if (Array.isArray(m[1])) { faPath.push(+b.dataset.i); render(); }
+  tiles(list.map(m => [FAI[m[0]] || (Array.isArray(m[1]) ? "📁" : "📄"), m[0]]), i => {
+    const m = list[i];
+    if (Array.isArray(m[1])) { faPath.push(i); render(); }
     else { soonT = m[0]; hist.push("fa"); go(m[1] || "soon", false); }
   });
 }
