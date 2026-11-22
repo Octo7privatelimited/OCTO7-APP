@@ -104,6 +104,8 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .nd b{font-size:.9rem}.nd span{color:#c5a059;font-size:.72rem}.nd small{color:var(--mut);font-size:.7rem}
 .nd.vac{border-style:dashed;background:none;color:var(--mut)}.nd.vac b{font-size:1.5rem;color:#c5a059}
 .nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#243453}
+select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23c5a059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
+.idf input[readonly]{opacity:.8}
 </style>
 </head>
 <body>
@@ -159,45 +161,81 @@ function welcomeView() {
 }
 
 function authView(mode = "login") {
-  const reg = mode === "reg";
+  if (mode === "reg") return regView();
   app.innerHTML = `<main class="auth"><button class="link back" id="bk">Back</button>
-  <h2 style="font-size:1.6rem;margin:6px 0 12px">${reg ? "New member registration" : "Member login"}</h2>
-  <form id="f" class="card">
-    ${reg ? `${idField("sp", "Sponsor ID")}
-    <p class="note" style="margin:-6px 0 12px">You need a sponsor ID to register. If you do not have one, contact the company and they will give you one.</p>
-    <label>Full name<input name="name" required autocomplete="name"></label>
-    <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="tel"></label>` : ""}
-    ${reg ? '<label>Email<input name="email" type="email" required autocomplete="email"></label>' : idField("uid", "User ID")}
-    ${pwf("pw", "Password", reg ? "new-password" : "current-password")}
-    ${reg ? `<label>Side under your sponsor<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>` : ""}
-    <button class="btn">${reg ? "Register" : "Log in"}</button>
-  </form>
-  <button class="link" id="sw">${reg ? "I already have an account" : "New member? Register"}</button></main>`;
-  $("#bk").onclick = welcomeView;
-  $("#sw").onclick = () => authView(reg ? "login" : "reg");
+  <h2 style="font-size:1.6rem;margin:6px 0 12px">Member login</h2>
+  <form id="f" class="card">${idField("uid", "User ID")}${pwf("pw", "Password", "current-password")}<button class="btn">Log in</button></form>
+  <button class="link" id="sw">New member? Register</button></main>`;
+  $("#bk").onclick = welcomeView; $("#sw").onclick = () => authView("reg");
   $("#f").onsubmit = e => {
     e.preventDefault();
-    const f = new FormData(e.target), btn = $(".btn");
-    act(btn, async () => {
+    const f = new FormData(e.target);
+    act($(".btn"), async () => {
       const password = f.get("pw");
-      if (reg) {
-        const email = f.get("email").trim();
-        const sp = fullId(f.get("sp"));
-        if (!(await call(sb.rpc("check_sponsor", {p_code: sp})))) { toast("Sponsor ID not found. Check it or contact the company.", true); return; }
-        const {data, error} = await sb.auth.signUp({email, password, options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim(), sponsor_code: sp, side: f.get("side")}}});
-        if (error) { toast(error.message, true); return; }
-        if (data.session) await loadMe();
-        else { toast("Registration received. Confirm the email we sent, then log in."); authView("login"); }
-      } else {
-        const em = await call(sb.rpc("login_email", {p_code: fullId(f.get("uid")), p_password: password}));
-        if (!em) { toast("Wrong user ID or password.", true); return; }
-        if (em === "LOCKED") { toast("Too many wrong attempts. Please try again after 15 minutes.", true); return; }
-        const {error} = await sb.auth.signInWithPassword({email: em, password});
-        if (error) { toast(error.message, true); return; }
-        await loadMe();
-      }
+      const em = await call(sb.rpc("login_email", {p_code: fullId(f.get("uid")), p_password: password}));
+      if (!em) { toast("Wrong user ID or password.", true); return; }
+      if (em === "LOCKED") { toast("Too many wrong attempts. Please try again after 15 minutes.", true); return; }
+      const {error} = await sb.auth.signInWithPassword(em.startsWith("tel:") ? {phone: "+" + em.slice(4), password} : {email: em, password});
+      if (error) { toast(error.message, true); return; }
+      await loadMe();
     });
   };
+}
+
+/* registration form used by the public page, the menu and the vacant places in Genealogy */
+function regHtml(c) {
+  const slot = c.mode === "slot";
+  return `<form id="rf" class="card">
+    <label>Full name<input name="name" required autocomplete="off"></label>
+    <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="off"></label>
+    <label>Email address (optional)<input name="email" type="email" autocomplete="off"></label>
+    ${idField("sp", "Sponsor ID", true, idRest(c.sponsor))}
+    ${c.mode === "menu" ? idField("pa", "Placement ID", true, idRest(c.parent)) : ""}
+    ${slot ? `<label>Placement ID<div class="idf"><span>OCTO7</span><input value="${esc(idRest(c.parent))}" readonly></div></label><p class="note" style="margin:-6px 0 12px">The new member is placed on the ${c.side === "R" ? "right" : "left"} under this ID.</p>`
+      : `<label>${c.mode === "menu" ? "Side" : "Side under your sponsor"}<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>`}
+    ${pwf("pw", "Password", "new-password")}${pwf("pw2", "Confirm Password", "new-password")}
+    <label>Verification<select name="otpm"><option value="" disabled selected>Enter OTP</option><option value="email">Email OTP</option><option value="sms">SMS OTP</option></select></label>
+    <button class="btn" type="button" id="so">Send OTP</button>
+    <div id="ob" hidden><label style="margin-top:14px">Type OTP<input name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label><button class="btn gold" type="button" id="co">Confirm OTP</button></div></form>`;
+}
+function regLogic(c) {
+  const f = $("#rf"); let ctx = null;
+  $("#so").onclick = e => act(e.target, async () => {
+    if (!f.reportValidity()) return;
+    const d = Object.fromEntries(new FormData(f)), sp = fullId(d.sp), m = d.otpm, email = (d.email || "").trim(), mob = String(d.mobile).replace(/\D/g, "");
+    if (d.pw !== d.pw2) { toast("The two passwords do not match.", true); return; }
+    if (!m) { toast("Choose Email OTP or SMS OTP.", true); return; }
+    if (m === "email" && !email) { toast("Enter an email address to get an email OTP.", true); return; }
+    if (mob.length < 10) { toast("Enter a valid mobile number.", true); return; }
+    if (!(await call(sb.rpc("check_sponsor", {p_code: sp})))) { toast("Sponsor ID not found. Check it or contact the company.", true); return; }
+    const tmp = supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false}});
+    const cred = m === "email" ? {email} : {phone: "+91" + mob.slice(-10)}, side = c.mode === "slot" ? c.side : d.side;
+    const {data, error} = await tmp.auth.signUp({...cred, password: d.pw, options: {data: {full_name: d.name.trim(), mobile: mob, sponsor_code: sp, side, contact_email: email || null, registered_by: c.mode === "public" ? null : me.id}}});
+    if (error) { toast(error.message, true); return; }
+    if (!data.user || data.user.identities?.length === 0) { toast("This email or mobile number is already registered.", true); return; }
+    if (data.session) { toast("OTP verification is switched off on the server. Please contact the company.", true); return; }
+    ctx = {tmp, cred, m, side, parent: c.mode === "menu" ? fullId(d.pa) : c.parent};
+    $("#ob").hidden = false; toast(m === "email" ? "OTP sent to the email address." : "OTP sent by SMS.");
+  });
+  $("#co").onclick = e => act(e.target, async () => {
+    const token = f.otp.value.trim();
+    if (!ctx || !token) { toast("Type the OTP first.", true); return; }
+    let r = await ctx.tmp.auth.verifyOtp({...ctx.cred, token, type: ctx.m === "email" ? "signup" : "sms"});
+    if (r.error && ctx.m === "email") r = await ctx.tmp.auth.verifyOtp({...ctx.cred, token, type: "email"});
+    if (r.error || !r.data.user) { toast("The OTP is wrong or has expired.", true); return; }
+    await c.done(ctx, r.data.user.id);
+  });
+}
+const okCard = (code, note, btn) => `<div class="card ctr"><h2 class="pos">Registration successful</h2><p class="note">Member ID</p><p class="id" style="font-size:1.6rem">${idHtml(code)}</p><p class="note">${note}</p>${btn || ""}</div>`;
+function regView() {
+  app.innerHTML = `<main class="auth"><button class="link back" id="bk">Back</button><h2 style="font-size:1.6rem;margin:6px 0 12px">New member registration</h2>${regHtml({mode: "public", sponsor: ""})}<button class="link" id="sw">I already have an account</button></main>`;
+  $("#bk").onclick = welcomeView; $("#sw").onclick = () => authView("login");
+  regLogic({mode: "public", done: async (ctx, id) => {
+    const {data} = await ctx.tmp.from("members").select("member_code").eq("id", id).maybeSingle();
+    await ctx.tmp.auth.signOut();
+    $("#rf").outerHTML = okCard(data?.member_code, "Use this User ID and your password to log in.", '<button class="btn" id="gl">Go to login</button>');
+    $("#gl").onclick = () => authView("login");
+  }});
 }
 
 /* ---------- after sign in ---------- */
@@ -366,26 +404,14 @@ async function coupons() {
   $("#v").innerHTML = `<div class="card">${c.map(x => `<div class="row"><span><b>${esc(x.pin_code)}</b><br><span class="note">${x.coupon_type === "redeem" ? "Redeem" : "Discount"} coupon, ${inr(x.face_value)}</span></span><span class="tag">${x.status === "used" ? "Used" : "Unused"}</span></div>`).join("") || '<p class="mut">Pins credited to you by the company appear here.</p>'}</div>`;
 }
 function newreg() {
-  const pre = regPre || {parent: me.member_code, side: "L"}; regPre = null;
-  $("#v").innerHTML = `<form id="nf" class="card"><h2>Register a new member</h2>
-    <label>Full name<input name="name" required autocomplete="off"></label><label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="off"></label>
-    <label>Email<input name="email" type="email" required autocomplete="off"></label>${pwf("pw", "Password for the new member", "new-password")}
-    ${idField("pa", "Place under member ID", true, idRest(pre.parent))}
-    <label>Side<select name="side"><option value="L"${pre.side !== "R" ? " selected" : ""}>Left</option><option value="R"${pre.side === "R" ? " selected" : ""}>Right</option></select></label>
-    <button class="btn">Register member</button></form>`;
-  $("#nf").onsubmit = e => {
-    e.preventDefault(); const f = new FormData(e.target);
-    act($(".btn"), async () => {
-      const tmp = supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false}});
-      const {data, error} = await tmp.auth.signUp({email: f.get("email").trim(), password: f.get("pw"), options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim(), sponsor_code: me.member_code, side: f.get("side")}}});
-      if (error) { toast(error.message, true); return; }
-      if (!data.user || data.user.identities?.length === 0) { toast("This email is already registered.", true); return; }
-      const r = await sb.rpc("place_new_member", {p_new_id: data.user.id, p_parent_code: fullId(f.get("pa")), p_side: f.get("side")});
-      if (r.error) { toast("Account created, but the place could not be set: " + r.error.message, true); return; }
-      $("#v").innerHTML = `<div class="card ctr"><h2>Member registered</h2><p class="note">Member ID</p><p class="id" style="font-size:1.6rem">${idHtml(r.data)}</p>
-        <p class="note">Ask the member to log in with this ID and the password you set. To start, the member needs an activation pin, which you can pass on from My Coupons & Pins.</p></div>`;
-    });
-  };
+  const pre = regPre; regPre = null;
+  const c = pre ? {mode: "slot", sponsor: me.member_code, parent: pre.parent, side: pre.side} : {mode: "menu", sponsor: me.member_code, parent: me.member_code};
+  $("#v").innerHTML = regHtml(c);
+  regLogic({...c, done: async (ctx, id) => {
+    const r = await sb.rpc("place_new_member", {p_new_id: id, p_parent_code: ctx.parent, p_side: ctx.side});
+    if (r.error) { toast("The OTP is verified, but the place could not be set: " + r.error.message, true); return; }
+    $("#rf").outerHTML = okCard(r.data, "Ask the member to log in with this ID and password. To start, the member needs an activation pin from the company.");
+  }});
 }
 function help() {
   const ph = cfg.help_phone, em = cfg.help_email, hr = cfg.help_hours;
