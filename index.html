@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2b3a8f">
+<meta name="theme-color" content="#17171b">
 <title>OCTO7</title>
 <style>
-:root{--bg:#0a1a33;--card:#1a2740;--ink:#f1f4fb;--mut:#a9b4cc;--line:#2a3a5c;--brand:#ffc20e;--on:#16130a;--bad:#ff8a80;--l:#6c8cff;--r:#ffc20e;color-scheme:dark}
+:root{--bg:#17171b;--card:#222228;--ink:#f1f2f6;--mut:#a7a9b4;--line:#34353d;--brand:#ffffff;--on:#17171b;--bad:#ff8a80;--l:#6c8cff;--r:#ffc20e;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
 body{padding:0}
@@ -46,24 +46,24 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 #toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:528px;margin:auto;padding:12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}#toast.bad{background:var(--bad);color:#fff}
 .back{padding:14px 0 0;text-decoration:none}
-.wel{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:20px;text-align:center;padding:max(28px,env(safe-area-inset-top)) 24px max(22px,env(safe-area-inset-bottom));background:radial-gradient(130% 55% at 50% 30%,#18356f 0,#0a1233 58%,#050816 100%) #050816;color:#fff}
+.wel{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:20px;text-align:center;padding:max(28px,env(safe-area-inset-top)) 24px max(22px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
 .wel .hd{padding-top:3vh}
 .wel .hd small{display:block;font-size:1rem;color:#b9c4ee;letter-spacing:.08em}
 .wel .hd b{display:block;font-size:3.4rem;line-height:1.05;letter-spacing:.07em;font-weight:800}
-.wel .lg{width:min(54vw,210px);aspect-ratio:1;border-radius:50%;box-shadow:0 0 90px 14px rgba(60,110,230,.38)}
+.wel .lg{width:min(54vw,210px);aspect-ratio:1;border-radius:50%;box-shadow:0 0 90px 14px rgba(255,255,255,.07)}
 .wel .lg img{display:block;width:100%;height:100%}
 .wel .slogan{font:italic 1.35rem/1.3 Georgia,"Times New Roman",serif;color:#f0cf7d;margin:0}
 .wel .sub{color:#c9d3f5;font-size:.95rem;max-width:30ch;margin:6px auto 0}
 .wel .acts{width:100%;max-width:420px}
 .wb{display:block;width:100%;padding:16px;border-radius:30px;font:inherit;font-weight:700;font-size:1.1rem;margin:0 0 12px;border:2px solid #e9c46a}
-.wb.g{background:linear-gradient(#f3d98b,#d9ae4a);color:#1a1405}
+.wb.g{background:#fff;color:#17171b}
 .wb.p{background:transparent;color:#f0cf7d}
 .wel .nt{color:#aab6e6;font-size:.85rem;margin:2px 0 0}
 .wel .ft{color:#c9d3f5;font-size:.85rem;letter-spacing:.05em}
-.tb{display:flex;align-items:center;gap:12px;background:#1c212b;color:#eceff4;border-bottom:1px solid rgba(197,160,89,.3);padding:calc(14px + env(safe-area-inset-top)) 16px 14px;font-size:1.25rem;position:sticky;top:0;z-index:5}
-.tb b{flex:1;font-weight:500}
-.menu{background:#c5a059;color:#111827;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
-.bk{background:none;border:0;color:#c5a059;font-size:1.7rem;padding:2px 8px;line-height:1}
+.tb{display:flex;align-items:center;gap:12px;background:var(--bg);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 14px;font-size:1.5rem;position:sticky;top:0;z-index:5}
+.tb b{flex:1;font-weight:700;color:#fff;letter-spacing:.01em}
+.menu{background:#fff;color:#17171b;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
+.bk{background:none;border:0;color:#fff;font-size:2rem;padding:2px 8px;line-height:1}
 .mi{display:flex;align-items:center;gap:18px;width:100%;padding:15px 8px;background:none;border:0;color:var(--ink);font:inherit;font-size:1.1rem;text-align:left;letter-spacing:.02em}
 .mi span{width:32px;text-align:center;font-size:1.4rem}
 .pt{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -76,7 +76,7 @@ h1.nm{font-size:1.9rem;margin:6px 0}
 .ctr{text-align:center}
 .av{position:relative;width:120px;height:120px;margin:4px auto 10px;border-radius:50%;background:#0f4aa0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700}
 .av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
-.cam{position:absolute;right:-4px;bottom:0;width:44px;height:44px;border-radius:50%;background:#ffc20e;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.cam{position:absolute;right:-4px;bottom:0;width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
 .phl{color:#8c9bff;font-weight:700;letter-spacing:.03em}
 .btn+.btn{margin-top:10px}
 [hidden]{display:none!important}
@@ -92,18 +92,18 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .tile{width:calc((100% - 20px) / 3);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;min-height:100px;padding:16px 6px 10px;border:1px solid rgba(197,160,89,.3);border-radius:14px;background:var(--card);color:#e8ecf7;font:inherit;font-size:.78rem;line-height:1.25;text-align:center;overflow-wrap:anywhere;transition:border-color .12s,background .12s}
 .tile span{display:flex;color:#c5a059}
-.tile:active,.tile:focus-visible{border-color:#f0cf7d;background:#243453;outline:0;transform:scale(.98)}
-.wl{color:#ff00ff}
+.tile:active,.tile:focus-visible{border-color:#f0cf7d;background:#2a2b33;outline:0;transform:scale(.98)}
+.wl{color:#aeb4c2}.pt .nm{color:#fff}
 .pw{position:relative}.pw input{padding-right:54px}
 .eye{position:absolute;right:4px;top:calc(50% + 2px);transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:1.25rem}
-.btn.gold{background:#c5a059;color:#111827}
-.btn.ghost{background:#1b2a45;color:#c5a059;border:1px solid #c5a059}
-.btn.ghost:active{background:#243453;border-color:#f0cf7d}
+.btn.gold{background:#fff;color:#17171b}
+.btn.ghost{background:#22232a;color:#c5a059;border:1px solid #c5a059}
+.btn.ghost:active{background:#2a2b33;border-color:#f0cf7d}
 .bt{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .nd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px;min-height:84px;border:1px solid rgba(197,160,89,.35);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:.78rem;text-align:center;overflow-wrap:anywhere}
 .nd b{font-size:.9rem}.nd span{color:#c5a059;font-size:.72rem}.nd small{color:var(--mut);font-size:.7rem}
 .nd.vac{border-style:dashed;background:none;color:var(--mut)}.nd.vac b{font-size:1.5rem;color:#c5a059}
-.nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#243453}
+.nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#2a2b33}
 select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23c5a059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
 .idf input[readonly]{opacity:.8}
 </style>
@@ -190,7 +190,7 @@ function regHtml(c) {
     <label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="off"></label>
     <label>Email address (optional)<input name="email" type="email" autocomplete="off"></label>
     ${idField("sp", "Sponsor ID", true, idRest(c.sponsor))}
-    ${c.mode === "menu" ? idField("pa", "Placement ID", true, idRest(c.parent)) : ""}
+    ${c.mode === "menu" ? `<label>Placement ID<select name="pa" id="pa">${c.slots.map(x => `<option value="${esc(x.code)}">${esc(x.code)}${x.name ? " - " + esc(x.name) : ""}</option>`).join("")}</select></label>` : ""}
     ${slot ? `<label>Placement ID<div class="idf"><span>OCTO7</span><input value="${esc(idRest(c.parent))}" readonly></div></label><p class="note" style="margin:-6px 0 12px">The new member is placed on the ${c.side === "R" ? "right" : "left"} under this ID.</p>`
       : `<label>${c.mode === "menu" ? "Side" : "Side under your sponsor"}<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>`}
     ${pwf("pw", "Password", "new-password")}${pwf("pw2", "Confirm Password", "new-password")}
@@ -403,10 +403,22 @@ async function coupons() {
   const c = await call(sb.from("coupon_pins").select("*").eq("owner_id", me.id).order("created_at", {ascending: false}).limit(100));
   $("#v").innerHTML = `<div class="card">${c.map(x => `<div class="row"><span><b>${esc(x.pin_code)}</b><br><span class="note">${x.coupon_type === "redeem" ? "Redeem" : "Discount"} coupon, ${inr(x.face_value)}</span></span><span class="tag">${x.status === "used" ? "Used" : "Unused"}</span></div>`).join("") || '<p class="mut">Pins credited to you by the company appear here.</p>'}</div>`;
 }
-function newreg() {
+async function newreg() {
   const pre = regPre; regPre = null;
-  const c = pre ? {mode: "slot", sponsor: me.member_code, parent: pre.parent, side: pre.side} : {mode: "menu", sponsor: me.member_code, parent: me.member_code};
+  let c;
+  if (pre) c = {mode: "slot", sponsor: me.member_code, parent: pre.parent, side: pre.side};
+  else {
+    const T = await call(sb.rpc("get_my_team", {p_max_depth: 10})), occ = {};
+    T.forEach(r => { if (r.parent_code) { occ[r.parent_code] = occ[r.parent_code] || {}; occ[r.parent_code][r.side] = 1; } });
+    const slots = T.map(r => ({code: r.member_code, name: r.full_name, L: !(occ[r.member_code] || {}).L, R: !(occ[r.member_code] || {}).R})).filter(x => x.L || x.R);
+    if (!slots.length) { $("#v").innerHTML = '<div class="card"><p class="mut">There are no vacant places in your team right now.</p></div>'; return; }
+    c = {mode: "menu", sponsor: me.member_code, slots};
+  }
   $("#v").innerHTML = regHtml(c);
+  if (c.mode === "menu") {
+    const fill = () => { const x = c.slots.find(y => y.code === $("#pa").value) || {}; $("select[name=side]").innerHTML = [["L", "Left"], ["R", "Right"]].filter(([k]) => x[k]).map(([k, l]) => `<option value="${k}">${l}</option>`).join(""); };
+    $("#pa").onchange = fill; fill();
+  }
   regLogic({...c, done: async (ctx, id) => {
     const r = await sb.rpc("place_new_member", {p_new_id: id, p_parent_code: ctx.parent, p_side: ctx.side});
     if (r.error) { toast("The OTP is verified, but the place could not be set: " + r.error.message, true); return; }
