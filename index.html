@@ -89,13 +89,16 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .sheet{width:100%;max-width:560px;background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));text-align:center}
 .sheet canvas{width:280px;height:280px;border-radius:50%;touch-action:none;margin:0 auto 12px;display:block;background:#000}
 .sheet input[type=range]{padding:0;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tile{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;min-height:100px;padding:16px 6px 10px;border:1px solid rgba(233,196,106,.28);border-radius:14px;background:var(--card);color:#e8ecf7;font:inherit;font-size:.78rem;line-height:1.25;text-align:center;overflow-wrap:anywhere;transition:border-color .12s,background .12s}
-.tile span{font-size:1.65rem;line-height:1;filter:grayscale(1) brightness(1.6) contrast(.9)}
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.tile{width:calc((100% - 20px) / 3);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;min-height:100px;padding:16px 6px 10px;border:1px solid rgba(197,160,89,.3);border-radius:14px;background:var(--card);color:#e8ecf7;font:inherit;font-size:.78rem;line-height:1.25;text-align:center;overflow-wrap:anywhere;transition:border-color .12s,background .12s}
+.tile span{display:flex;color:#c5a059}
 .tile:active,.tile:focus-visible{border-color:#f0cf7d;background:#243453;outline:0;transform:scale(.98)}
 .wl{color:#ff00ff}
 .pw{position:relative}.pw input{padding-right:54px}
 .eye{position:absolute;right:4px;top:calc(50% + 2px);transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:1.25rem}
+.btn.gold{background:#c5a059;color:#111827}
+.btn.ghost{background:#1b2a45;color:#c5a059;border:1px solid #c5a059}
+.btn.ghost:active{background:#243453;border-color:#f0cf7d}
 </style>
 </head>
 <body>
@@ -263,11 +266,11 @@ function activateView() {
 
 /* ---------- main app ---------- */
 let faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "";
-const NAV = [["portal", "Home"], ["shop", "Shop"], ["tree", "Team"], ["wallet", "Wallet"], ["profile", "Profile"]];
-const MENU = [["🏠", "Home", "portal"], ["🛡️", "Founder Administration", "fa", 1], ["📊", "Dashboard", "dash"], ["👤", "My Profile", "profile"],
-  ["🌳", "Genealogy", "tree"], ["➕", "New Member Registration", "newreg"], ["🛍️", "Products & Catalog", "shop"], ["🛒", "My Purchases / Orders", "orders"],
-  ["👛", "Wallet & Withdrawals", "wallet"], ["🏦", "Bank Details & KYC", "bank"], ["🎟️", "My Coupons & Pins", "coupons"], ["👥", "Team Members", "tree"], ["📞", "Help Line & Support", "soon"], ["🔔", "Notifications", "notes"],
-  ["🔑", "Change Password", "password"], ["🚪", "Logout", "logout"]];
+const NAV = [["portal", "Home"], ["shop", "Shop"], ["wallet", "Wallet"], ["profile", "Profile"]];
+const MENU = [["grid", "Home", "portal"], ["shield", "Founder Administration", "fa", 1], ["grid", "Dashboard", "dash"], ["user", "My Profile", "profile"],
+  ["share", "Genealogy", "tree"], ["userplus", "New Member Registration", "newreg"], ["package", "Products & Catalog", "shop"], ["cart", "My Purchases / Orders", "orders"],
+  ["wallet", "Wallet & Withdrawals", "wallet"], ["bank", "Bank Details & KYC", "bank"], ["ticket", "My Coupons & Pins", "coupons"], ["users", "Team Members", "tree"],
+  ["headset", "Help Line & Support", "soon"], ["bell", "Notifications", "notes"], ["key", "Change Password", "password"], ["logout", "Logout", "logout"]];
 const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu", f: menu}, dash: {t: "Dashboard", f: home}, profile: {t: "My Profile", f: profile},
   pdetails: {t: "My Profile Details", f: pdetails}, pedit: {t: "Edit Profile Details", f: pedit}, tree: {t: "Genealogy", f: team}, newreg: {t: "New Member Registration", f: newreg},
   shop: {t: "Products & Catalog", f: shop}, orders: {t: "My Purchases / Orders", f: orders}, wallet: {t: "Wallet & Withdrawals", f: wallet}, payouts: {t: "Payout Details", f: payouts},
@@ -290,11 +293,44 @@ function render() {
 async function portal() {
   $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
 }
+const ICO = {
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  grid: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+  userplus: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
+  cart: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
+  bank: '<path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-7 10 7z"/>',
+  ticket: '<path d="M3 9a3 3 0 0 1 0 6v3h18v-3a3 3 0 0 1 0-6V6H3z"/><path d="M13 6v2M13 11v2M13 16v2"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  headset: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+  key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M17 6l3 3M14 9l2 2"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>',
+  folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  wallet: '<path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>',
+  chart: '<path d="M18 20V10M12 20V4M6 20v-6"/>',
+  trend: '<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',
+  megaphone: '<path d="M11 5L6 9H2v6h4l5 4zM19 5a10 10 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/>',
+  monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  package: '<path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7zM3.3 7L12 12l8.7-5M12 22V12"/>',
+  clipboard: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
+  archive: '<path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/>',
+  truck: '<rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  scale: '<path d="M12 3v18M5 7h14M5 7l-3 8a3 3 0 0 0 6 0zM19 7l-3 8a3 3 0 0 0 6 0z"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>',
+  book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
+  briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  card: '<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>'};
+const ic = n => `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n] || ICO.file}</svg>`;
 function tiles(items, click) {
-  $("#v").innerHTML = `<div class="grid">${items.map(([ic, l], i) => `<button class="tile" data-i="${i}"><span>${ic}</span>${esc(l)}</button>`).join("")}</div>`;
+  $("#v").innerHTML = `<div class="grid">${items.map(([n, l], i) => `<button class="tile" data-i="${i}"><span>${ic(n)}</span>${esc(l)}</button>`).join("")}</div>`;
   $("#v").querySelectorAll(".tile").forEach(b => b.onclick = () => click(+b.dataset.i));
 }
-const HIDE = ["Home", "My Profile", "Products & Catalog", "Wallet & Withdrawals", "Team Members"];
+const HIDE = ["Home", "My Profile", "Products & Catalog", "Wallet & Withdrawals"];
 async function menu() {
   const items = MENU.filter(m => (!m[3] || isAdmin) && !HIDE.includes(m[1]));
   tiles(items.map(m => [m[0], m[1]]), i => {
@@ -530,7 +566,7 @@ async function saveKyc(patch) {
 }
 const KS = {pending: "Waiting for review", approved: "Approved", rejected: "Rejected"};
 const docBox = (label, key, has) => `<div class="card"><b>${label}</b><p class="note">${has ? "Uploaded. You can upload again to replace it." : "Not uploaded yet."}</p>
-  <button class="btn" data-k="${key}" data-m="c">Scan with camera</button><button class="btn" data-k="${key}" data-m="f">Upload photo</button>
+  <button class="btn ghost" data-k="${key}" data-m="c">Scan with camera</button><button class="btn ghost" data-k="${key}" data-m="f">Upload photo</button>
   <input type="file" accept="image/*" capture="environment" hidden id="c-${key}"><input type="file" accept="image/*" hidden id="f-${key}"></div>`;
 function bindDocs(keys, again) {
   $("#v").querySelectorAll("[data-k]").forEach(b => b.onclick = () => $("#" + b.dataset.m + "-" + b.dataset.k).click());
@@ -557,8 +593,8 @@ async function bank() {
     <label>Bank name<input name="bank_name" value="${esc(k.bank_name)}" required></label>
     <label>Account number<input name="account_number" inputmode="numeric" value="${esc(k.account_number)}" required></label>
     <label>IFSC code<input name="ifsc" autocapitalize="characters" value="${esc(k.ifsc)}" required></label>
-    <button class="btn">Save account details</button></form>
-  ${docBox("Passbook photo", "passbook", k.passbook_path)}<button class="btn" id="nx">KYC details</button>`;
+    <button class="btn gold">Save account details</button></form>
+  ${docBox("Passbook photo", "passbook", k.passbook_path)}<button class="btn ghost" id="nx">KYC details</button>`;
   saveForm("#bf", bank); bindDocs(["passbook"], bank);
   $("#nx").onclick = () => go("kycdocs");
 }
@@ -566,7 +602,7 @@ async function kycdocs() {
   const k = await loadKyc();
   $("#v").innerHTML = `<div class="card"><span class="note">KYC status</span><b>${KS[k.status] || "Not submitted"}</b></div>
   ${docBox("Aadhaar card", "aadhaar", k.aadhaar_path)}${docBox("PAN card", "pan", k.pan_path)}
-  <form id="kf" class="card"><label>PAN number<input name="pan_number" autocapitalize="characters" value="${esc(k.pan_number)}" required></label><button class="btn">Save PAN number</button></form>`;
+  <form id="kf" class="card"><label>PAN number<input name="pan_number" autocapitalize="characters" value="${esc(k.pan_number)}" required></label><button class="btn gold">Save PAN number</button></form>`;
   saveForm("#kf", kycdocs); bindDocs(["aadhaar", "pan"], kycdocs);
 }
 
@@ -586,13 +622,14 @@ async function mmap(ids) {
   return Object.fromEntries((data || []).map(m => [m.id, m]));
 }
 const mc = m => m ? `${esc(m.member_code)} ${esc(m.full_name || "")}` : "";
-const FAI = {"Human Resource (HR)": "👥", "Administration": "🛠️", "Accounts & Finance": "💰", "Coupons & Pins Management": "🎟️", "Sales Department": "📈", "Marketing Department": "📣",
-  "Member Relations": "🤝", "Network Department": "🌐", "Customer Support": "🎧", "IT & Software": "💻", "Product Management": "📦", "Purchase & Procurement": "🧾", "Inventory & Warehouse": "🏬",
-  "Logistics & Distribution": "🚚", "Legal & Compliance": "⚖️", "Quality Control": "🔍", "Training & Development": "🎓", "BV Calculation & Matching": "📊", "Withdrawal Management": "🏧", "Member Wallet": "👛"};
+const FAI = {"Human Resource (HR)": "briefcase", "Administration": "tool", "Accounts & Finance": "wallet", "Coupons & Pins Management": "ticket", "Sales Department": "trend", "Marketing Department": "megaphone",
+  "Member Relations": "smile", "Network Department": "globe", "Customer Support": "headset", "IT & Software": "monitor", "Product Management": "package", "Purchase & Procurement": "clipboard",
+  "Inventory & Warehouse": "archive", "Logistics & Distribution": "truck", "Legal & Compliance": "scale", "Quality Control": "search", "Training & Development": "book",
+  "BV Calculation & Matching": "chart", "Withdrawal Management": "card", "Member Wallet": "wallet"};
 async function fa() {
   adm();
   let list = FA; for (const i of faPath) list = list[i][1];
-  tiles(list.map(m => [FAI[m[0]] || (Array.isArray(m[1]) ? "📁" : "📄"), m[0]]), i => {
+  tiles(list.map(m => [FAI[m[0]] || (Array.isArray(m[1]) ? "folder" : "file"), m[0]]), i => {
     const m = list[i];
     if (Array.isArray(m[1])) { faPath.push(i); render(); }
     else { soonT = m[0]; hist.push("fa"); go(m[1] || "soon", false); }
