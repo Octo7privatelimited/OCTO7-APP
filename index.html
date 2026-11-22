@@ -60,10 +60,10 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .wb.p{background:transparent;color:#f0cf7d}
 .wel .nt{color:#aab6e6;font-size:.85rem;margin:2px 0 0}
 .wel .ft{color:#c9d3f5;font-size:.85rem;letter-spacing:.05em}
-.tb{display:flex;align-items:center;gap:12px;background:#0f4aa0;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;font-size:1.25rem;position:sticky;top:0;z-index:5}
+.tb{display:flex;align-items:center;gap:12px;background:#1c212b;color:#eceff4;border-bottom:1px solid rgba(197,160,89,.3);padding:calc(14px + env(safe-area-inset-top)) 16px 14px;font-size:1.25rem;position:sticky;top:0;z-index:5}
 .tb b{flex:1;font-weight:500}
-.menu{background:#ffc20e;color:#16130a;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
-.bk{background:none;border:0;color:#fff;font-size:1.7rem;padding:2px 8px;line-height:1}
+.menu{background:#c5a059;color:#111827;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
+.bk{background:none;border:0;color:#c5a059;font-size:1.7rem;padding:2px 8px;line-height:1}
 .mi{display:flex;align-items:center;gap:18px;width:100%;padding:15px 8px;background:none;border:0;color:var(--ink);font:inherit;font-size:1.1rem;text-align:left;letter-spacing:.02em}
 .mi span{width:32px;text-align:center;font-size:1.4rem}
 .pt{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -99,6 +99,11 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .btn.gold{background:#c5a059;color:#111827}
 .btn.ghost{background:#1b2a45;color:#c5a059;border:1px solid #c5a059}
 .btn.ghost:active{background:#243453;border-color:#f0cf7d}
+.bt{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px;min-height:84px;border:1px solid rgba(197,160,89,.35);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:.78rem;text-align:center;overflow-wrap:anywhere}
+.nd b{font-size:.9rem}.nd span{color:#c5a059;font-size:.72rem}.nd small{color:var(--mut);font-size:.7rem}
+.nd.vac{border-style:dashed;background:none;color:var(--mut)}.nd.vac b{font-size:1.5rem;color:#c5a059}
+.nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#243453}
 </style>
 </head>
 <body>
@@ -106,7 +111,8 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 <div id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const sb = supabase.createClient("https://xqckhmrzdzhsdronrbow.supabase.co", "sb_publishable_kvOcNoJlS_YTk0vf8N4HBg_WWrWLsGp");
+const SB_URL = "https://xqckhmrzdzhsdronrbow.supabase.co", SB_KEY = "sb_publishable_kvOcNoJlS_YTk0vf8N4HBg_WWrWLsGp";
+const sb = supabase.createClient(SB_URL, SB_KEY);
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -265,16 +271,16 @@ function activateView() {
 }
 
 /* ---------- main app ---------- */
-let faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "";
+let treeRoot = null, regPre = null, faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "";
 const NAV = [["portal", "Home"], ["shop", "Shop"], ["wallet", "Wallet"], ["profile", "Profile"]];
 const MENU = [["grid", "Home", "portal"], ["shield", "Founder Administration", "fa", 1], ["grid", "Dashboard", "dash"], ["user", "My Profile", "profile"],
   ["share", "Genealogy", "tree"], ["userplus", "New Member Registration", "newreg"], ["package", "Products & Catalog", "shop"], ["cart", "My Purchases / Orders", "orders"],
   ["wallet", "Wallet & Withdrawals", "wallet"], ["bank", "Bank Details & KYC", "bank"], ["ticket", "My Coupons & Pins", "coupons"], ["users", "Team Members", "tree"],
-  ["headset", "Help Line & Support", "soon"], ["bell", "Notifications", "notes"], ["key", "Change Password", "password"], ["logout", "Logout", "logout"]];
+  ["headset", "Help Line & Support", "help"], ["bell", "Notifications", "notes"], ["key", "Change Password", "password"], ["logout", "Logout", "logout"]];
 const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu", f: menu}, dash: {t: "Dashboard", f: home}, profile: {t: "My Profile", f: profile},
   pdetails: {t: "My Profile Details", f: pdetails}, pedit: {t: "Edit Profile Details", f: pedit}, tree: {t: "Genealogy", f: team}, newreg: {t: "New Member Registration", f: newreg},
   shop: {t: "Products & Catalog", f: shop}, orders: {t: "My Purchases / Orders", f: orders}, wallet: {t: "Wallet & Withdrawals", f: wallet}, payouts: {t: "Payout Details", f: payouts},
-  coupons: {t: "My Coupons & Pins", f: coupons}, notes: {t: "Notifications", f: notes}, password: {t: "Change Password", f: password}, soon: {t: "", f: soon},
+  coupons: {t: "My Coupons & Pins", f: coupons}, notes: {t: "Notifications", f: notes}, password: {t: "Change Password", f: password}, soon: {t: "", f: soon}, help: {t: "Help Line & Support", f: async () => help()},
   bank: {t: "Bank Details & KYC", f: bank}, kycdocs: {t: "KYC Documents", f: kycdocs}, fa: {t: "", f: fa}, cpd: {t: "Coupon & Pin Dashboard", f: cpd}, cpg: {t: "Generate Pin & Distribution", f: cpg},
   cph: {t: "Coupon & Pin History", f: cph}, wdm: {t: "Withdrawal Management", f: wdm}, kycr: {t: "KYC Review", f: kycr}, ords: {t: "Orders & Delivery", f: ords}, prodm: {t: "Products", f: prodm}, bvrun: {t: "Daily BV Calculation", f: bvrun}};
 
@@ -360,9 +366,35 @@ async function coupons() {
   $("#v").innerHTML = `<div class="card">${c.map(x => `<div class="row"><span><b>${esc(x.pin_code)}</b><br><span class="note">${x.coupon_type === "redeem" ? "Redeem" : "Discount"} coupon, ${inr(x.face_value)}</span></span><span class="tag">${x.status === "used" ? "Used" : "Unused"}</span></div>`).join("") || '<p class="mut">Pins credited to you by the company appear here.</p>'}</div>`;
 }
 function newreg() {
-  $("#v").innerHTML = `<div class="card"><h2>Add a new member</h2><p>Ask the new member to open this app and choose <b>New Member Registration</b>, then enter your member ID as the sponsor ID.</p>
-  <p class="id" style="font-size:1.5rem">${idHtml(me.member_code)}</p><button class="btn" id="cp">Copy my member ID</button></div>`;
-  $("#cp").onclick = () => navigator.clipboard?.writeText(me.member_code).then(() => toast("Member ID copied."), () => toast("Could not copy.", true));
+  const pre = regPre || {parent: me.member_code, side: "L"}; regPre = null;
+  $("#v").innerHTML = `<form id="nf" class="card"><h2>Register a new member</h2>
+    <label>Full name<input name="name" required autocomplete="off"></label><label>Mobile number<input name="mobile" inputmode="tel" required autocomplete="off"></label>
+    <label>Email<input name="email" type="email" required autocomplete="off"></label>${pwf("pw", "Password for the new member", "new-password")}
+    ${idField("pa", "Place under member ID", true, idRest(pre.parent))}
+    <label>Side<select name="side"><option value="L"${pre.side !== "R" ? " selected" : ""}>Left</option><option value="R"${pre.side === "R" ? " selected" : ""}>Right</option></select></label>
+    <button class="btn">Register member</button></form>`;
+  $("#nf").onsubmit = e => {
+    e.preventDefault(); const f = new FormData(e.target);
+    act($(".btn"), async () => {
+      const tmp = supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false}});
+      const {data, error} = await tmp.auth.signUp({email: f.get("email").trim(), password: f.get("pw"), options: {data: {full_name: f.get("name").trim(), mobile: f.get("mobile").trim(), sponsor_code: me.member_code, side: f.get("side")}}});
+      if (error) { toast(error.message, true); return; }
+      if (!data.user || data.user.identities?.length === 0) { toast("This email is already registered.", true); return; }
+      const r = await sb.rpc("place_new_member", {p_new_id: data.user.id, p_parent_code: fullId(f.get("pa")), p_side: f.get("side")});
+      if (r.error) { toast("Account created, but the place could not be set: " + r.error.message, true); return; }
+      $("#v").innerHTML = `<div class="card ctr"><h2>Member registered</h2><p class="note">Member ID</p><p class="id" style="font-size:1.6rem">${idHtml(r.data)}</p>
+        <p class="note">Ask the member to log in with this ID and the password you set. To start, the member needs an activation pin, which you can pass on from My Coupons & Pins.</p></div>`;
+    });
+  };
+}
+function help() {
+  const ph = cfg.help_phone, em = cfg.help_email, hr = cfg.help_hours;
+  $("#v").innerHTML = `<div class="card"><h2>We are here to help</h2>${ph ? `<div class="row"><span>Phone</span><a class="link" href="tel:${esc(ph)}">${esc(ph)}</a></div>` : ""}${em ? `<div class="row"><span>Email</span><a class="link" href="mailto:${esc(em)}">${esc(em)}</a></div>` : ""}${hr ? `<div class="row"><span>Hours</span><b>${esc(hr)}</b></div>` : ""}${ph || em || hr ? "" : '<p class="mut">The company will add its help line details here.</p>'}</div>
+  ${isAdmin ? `<form id="hf" class="card"><h2>Help line details (founder only)</h2><label>Phone<input name="help_phone" value="${esc(ph)}"></label><label>Email<input name="help_email" type="email" value="${esc(em)}"></label><label>Hours<input name="help_hours" value="${esc(hr)}"></label><button class="btn">Save</button></form>` : ""}`;
+  if (isAdmin) $("#hf").onsubmit = e => {
+    e.preventDefault(); const d = Object.fromEntries(new FormData(e.target));
+    act($(".btn"), async () => { for (const [k, v] of Object.entries(d)) await call(sb.from("app_settings").update({value: v.trim()}).eq("key", k)); Object.assign(cfg, d); toast("Saved."); help(); });
+  };
 }
 function password() {
   $("#v").innerHTML = `<form id="pw" class="card">${pwf("p", "New password", "new-password")}<button class="btn">Update password</button></form>`;
@@ -420,13 +452,24 @@ async function shop() {
 }
 
 async function team() {
-  const rows = await call(sb.rpc("get_my_team", {p_max_depth: 10}));
-  const down = rows.filter(r => r.depth > 0);
-  $("#v").innerHTML = `<div class="card"><h2>My team</h2><p>${down.length ? `${down.length} member${down.length > 1 ? "s" : ""} under you.` : "No one has joined under you yet."}</p>
-  <p class="note">New members enter your member ID <b>${esc(me.member_code)}</b> as their sponsor ID when they register.</p></div>
-  <div class="card">${down.map(r => `<div class="row" style="padding-left:${Math.min(r.depth - 1, 7) * 14}px"><span>${esc(r.full_name || "Member")}<br><span class="note">${esc(r.member_code)} under ${esc(r.parent_code || "")}</span></span><span><span class="tag ${r.side}">${r.side === "L" ? "Left" : "Right"}</span> <span class="note">${r.status === "active" ? "Active" : "Pending"}</span></span></div>`).join("") || '<p class="mut">Your team tree will appear here.</p>'}</div>`;
+  const T = await call(sb.rpc("get_my_team", {p_max_depth: 10})), by = {};
+  T.forEach(r => by[r.member_code] = r);
+  const kid = (c, sd) => T.find(r => r.parent_code === c && r.side === sd);
+  if (!by[treeRoot]) treeRoot = me.member_code;
+  const cell = (r, parent, sd, span) => r
+    ? `<button class="nd" data-c="${esc(r.member_code)}" style="grid-column:span ${span}"><b>${esc((r.full_name || "").split(" ")[0] || "Member")}</b><span>${idHtml(r.member_code)}</span><small>${r.status === "active" ? "Active" : "Pending"}</small></button>`
+    : `<button class="nd vac" data-p="${esc(parent)}" data-s="${sd}" style="grid-column:span ${span}"><b>+</b><span>${sd === "L" ? "Left" : "Right"}</span><small>vacant</small></button>`;
+  const l1 = ["L", "R"].map(sd => kid(treeRoot, sd));
+  const l2 = l1.flatMap((p, i) => ["L", "R"].map(sd => p ? cell(kid(p.member_code, sd), p.member_code, sd, 1) : '<div class="nd gap"></div>'));
+  const r = by[treeRoot];
+  $("#v").innerHTML = `<div class="card">${treeRoot !== me.member_code ? '<button class="link" id="up" style="padding-top:0">Up one level</button>' : ""}
+  <div class="bt"><div class="nd root" style="grid-column:span 4"><b>${esc(r.full_name || "Member")}</b><span>${idHtml(r.member_code)}</span></div>
+  ${l1.map((p, i) => cell(p, treeRoot, i ? "R" : "L", 2)).join("")}${l2.join("")}</div></div>
+  <p class="note">Tap a member to see their team. Tap a vacant place to register a new member there.</p>`;
+  if ($("#up")) $("#up").onclick = () => { treeRoot = r.parent_code; team(); };
+  $("#v").querySelectorAll("[data-c]").forEach(b => b.onclick = () => { treeRoot = b.dataset.c; team(); });
+  $("#v").querySelectorAll(".vac").forEach(b => b.onclick = () => { regPre = {parent: b.dataset.p, side: b.dataset.s}; go("newreg"); });
 }
-
 const KIND = {binary_commission: "Binary income", sponsor_bonus: "Sponsor bonus", withdrawal: "Withdrawal", withdrawal_refund: "Withdrawal refund"};
 async function wallet() {
   const w = await call(sb.from("wallets").select("balance").eq("member_id", me.id).maybeSingle());
