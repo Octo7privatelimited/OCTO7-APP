@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#17171b">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>OCTO7</title>
 <style>
 :root{--bg:#17171b;--card:#222228;--ink:#f1f2f6;--mut:#a7a9b4;--line:#34353d;--brand:#ffffff;--on:#17171b;--bad:#ff8a80;--l:#6c8cff;--r:#ffc20e;color-scheme:dark}
@@ -72,7 +74,7 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .id{color:#f9c929}
 h1.nm{font-size:1.9rem;margin:6px 0}
 .f{display:block}.f b{display:block;font-size:1.05rem;margin-top:2px;word-break:break-word}
-.sec{color:#f9c929;font-size:1.15rem;margin:22px 0 10px}
+.sec{color:#fff;font-size:1.15rem;margin:22px 0 10px}
 .ctr{text-align:center}
 .av{position:relative;width:120px;height:120px;margin:4px auto 10px;border-radius:50%;background:#0f4aa0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700}
 .av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
@@ -121,7 +123,8 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const inr = n => "₹" + Number(n || 0).toLocaleString("en-IN", {maximumFractionDigits: 2});
 const idRest = v => String(v || "").trim().toUpperCase().replace(/^OCTO7/, "");
 const fullId = v => idRest(v) ? "OCTO7" + idRest(v) : "";
-const idHtml = c => { c = String(c || ""); return c.startsWith("OCTO7") ? `<span class="idl">OCTO7<br>${esc(c.slice(5))}</span>` : esc(c); };
+const idHtml = c => esc(c);
+const idStack = c => { c = String(c || ""); return c.startsWith("OCTO7") ? `<span class="idl">OCTO7<br>${esc(c.slice(5))}</span>` : esc(c); };
 const idField = (n, l, req = true, val = "") => `<label>${l}<div class="idf"><span>OCTO7</span><input name="${n}" value="${esc(val)}"${req ? " required" : ""} autocapitalize="characters" autocomplete="off"></div></label>`;
 const pwf = (n, l, ac, min = 6) => `<label>${l}<div class="pw"><input name="${n}" type="password" minlength="${min}" required autocomplete="${ac}"><button type="button" class="eye" aria-label="Show">👁️</button></div></label>`;
 document.addEventListener("click", e => {
@@ -152,7 +155,7 @@ function welcomeView() {
   app.innerHTML = `<div class="wel"><div class="hd"><small>Welcome to</small><b>OCTO7</b></div>
   <div><div class="lg"><img src="logo.png" alt="OCTO7 logo" width="210" height="210" onerror="this.parentNode.remove()"></div>
   <p class="slogan" style="margin-top:20px">Together for a better tomorrow</p>
-  <p class="sub">Quality garments, entrepreneurship and a growing network.</p></div>
+  <p class="sub">Quality products, entrepreneurship and a growing network.</p></div>
   <div class="acts"><button class="wb g" id="bl">Member Login</button><button class="wb p" id="br">New Member Registration</button>
   <p class="nt">A sponsor ID is needed to register. No sponsor ID? Contact the company.</p></div>
   <div class="ft">OCTO7 India • Dream • Network • Grow</div></div>`;
@@ -193,7 +196,7 @@ function regHtml(c) {
     ${c.mode === "menu" ? `<label>Placement ID<select name="pa" id="pa">${c.slots.map(x => `<option value="${esc(x.code)}">${esc(x.code)}${x.name ? " - " + esc(x.name) : ""}</option>`).join("")}</select></label>` : ""}
     ${slot ? `<label>Placement ID<div class="idf"><span>OCTO7</span><input value="${esc(idRest(c.parent))}" readonly></div></label><p class="note" style="margin:-6px 0 12px">The new member is placed on the ${c.side === "R" ? "right" : "left"} under this ID.</p>`
       : `<label>${c.mode === "menu" ? "Side" : "Side under your sponsor"}<select name="side"><option value="L">Left</option><option value="R">Right</option></select></label>`}
-    ${pwf("pw", "Password", "new-password")}${pwf("pw2", "Confirm Password", "new-password")}
+    ${pwf("pw", "New password", "new-password")}${pwf("pw2", "Confirm password", "new-password")}
     <label>Verification<select name="otpm"><option value="" disabled selected>Enter OTP</option><option value="email">Email OTP</option><option value="sms">SMS OTP</option></select></label>
     <button class="btn" type="button" id="so">Send OTP</button>
     <div id="ob" hidden><label style="margin-top:14px">Type OTP<input name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label><button class="btn gold" type="button" id="co">Confirm OTP</button></div></form>`;
@@ -435,13 +438,14 @@ function help() {
   };
 }
 function password() {
-  $("#v").innerHTML = `<form id="pw" class="card">${pwf("p", "New password", "new-password")}<button class="btn">Update password</button></form>`;
+  $("#v").innerHTML = `<form id="pw" class="card">${pwf("p", "New password", "new-password")}${pwf("p2", "Confirm password", "new-password")}<button class="btn">Update password</button></form>`;
   $("#pw").onsubmit = e => {
     e.preventDefault();
-    act($(".btn"), async () => { await call(sb.auth.updateUser({password: new FormData(e.target).get("p")})); e.target.reset(); toast("Password updated."); });
+    const f = new FormData(e.target);
+    if (f.get("p") !== f.get("p2")) { toast("The two passwords do not match.", true); return; }
+    act($(".btn"), async () => { await call(sb.auth.updateUser({password: f.get("p")})); e.target.reset(); toast("Password updated."); });
   };
 }
-
 async function home() {
   const [w, b, n, c] = await Promise.all([
     sb.from("wallets").select("balance").eq("member_id", me.id).maybeSingle(),
@@ -468,9 +472,9 @@ async function shop() {
     sb.from("products").select("*").eq("active", true).order("created_at"),
     sb.from("orders").select("*").order("created_at", {ascending: false}).limit(10)]);
   const items = p.data || [];
-  $("#v").innerHTML = `<h2>Garments</h2>${items.map(x => `<div class="card"><div class="row" style="border:0;padding:0">
+  $("#v").innerHTML = `<h2>Products</h2>${items.map(x => `<div class="card"><div class="row" style="border:0;padding:0">
     <div><b>${esc(x.name)}</b><br><span class="note">${esc(x.description || "")}</span><br><b>${inr(x.price)}</b> <span class="note">${+x.pv} PV</span></div>
-    <div class="qty"><button data-id="${x.id}" data-d="-1" aria-label="Less">−</button><span id="q-${x.id}">${cart[x.id] || 0}</span><button data-id="${x.id}" data-d="1" aria-label="More">+</button></div></div></div>`).join("") || '<p class="mut">No garments are listed yet. Please check back soon.</p>'}
+    <div class="qty"><button data-id="${x.id}" data-d="-1" aria-label="Less">−</button><span id="q-${x.id}">${cart[x.id] || 0}</span><button data-id="${x.id}" data-d="1" aria-label="More">+</button></div></div></div>`).join("") || '<p class="mut">No products are listed yet. Please check back soon.</p>'}
   ${items.length ? `<div class="card"><div class="row" style="border:0"><span>Order total</span><b id="tot"></b></div><button class="btn" id="po">Place order</button>
   <p class="note" style="margin-top:8px">The company confirms your order after payment and updates its status here.</p></div>` : ""}
   <h2>My orders</h2><div class="card">${(o.data || []).map(x => `<div class="row"><span>${day(x.created_at)}</span><span class="tag">${STATUS[x.status] || x.status}</span><b>${inr(x.total)}</b></div>`).join("") || '<p class="mut">You have not placed an order yet.</p>'}</div>`;
@@ -483,7 +487,7 @@ async function shop() {
   const po = $("#po");
   if (po) po.onclick = () => act(po, async () => {
     const list = Object.entries(cart).filter(([, q]) => q > 0).map(([product_id, qty]) => ({product_id, qty}));
-    if (!list.length) { toast("Choose at least one garment.", true); return; }
+    if (!list.length) { toast("Choose at least one product.", true); return; }
     await call(sb.rpc("place_order", {p_items: list}));
     cart = {}; toast("Order placed."); await shop();
   });
@@ -495,13 +499,13 @@ async function team() {
   const kid = (c, sd) => T.find(r => r.parent_code === c && r.side === sd);
   if (!by[treeRoot]) treeRoot = me.member_code;
   const cell = (r, parent, sd, span) => r
-    ? `<button class="nd" data-c="${esc(r.member_code)}" style="grid-column:span ${span}"><b>${esc((r.full_name || "").split(" ")[0] || "Member")}</b><span>${idHtml(r.member_code)}</span><small>${r.status === "active" ? "Active" : "Pending"}</small></button>`
+    ? `<button class="nd" data-c="${esc(r.member_code)}" style="grid-column:span ${span}"><b>${esc((r.full_name || "").split(" ")[0] || "Member")}</b><span>${idStack(r.member_code)}</span><small>${r.status === "active" ? "Active" : "Pending"}</small></button>`
     : `<button class="nd vac" data-p="${esc(parent)}" data-s="${sd}" style="grid-column:span ${span}"><b>+</b><span>${sd === "L" ? "Left" : "Right"}</span><small>vacant</small></button>`;
   const l1 = ["L", "R"].map(sd => kid(treeRoot, sd));
   const l2 = l1.flatMap((p, i) => ["L", "R"].map(sd => p ? cell(kid(p.member_code, sd), p.member_code, sd, 1) : '<div class="nd gap"></div>'));
   const r = by[treeRoot];
   $("#v").innerHTML = `<div class="card">${treeRoot !== me.member_code ? '<button class="link" id="up" style="padding-top:0">Up one level</button>' : ""}
-  <div class="bt"><div class="nd root" style="grid-column:span 4"><b>${esc(r.full_name || "Member")}</b><span>${idHtml(r.member_code)}</span></div>
+  <div class="bt"><div class="nd root" style="grid-column:span 4"><b>${esc(r.full_name || "Member")}</b><span>${idStack(r.member_code)}</span></div>
   ${l1.map((p, i) => cell(p, treeRoot, i ? "R" : "L", 2)).join("")}${l2.join("")}</div></div>
   <p class="note">Tap a member to see their team. Tap a vacant place to register a new member there.</p>`;
   if ($("#up")) $("#up").onclick = () => { treeRoot = r.parent_code; team(); };
@@ -781,13 +785,13 @@ async function kycr() {
 async function prodm() {
   adm();
   const p = await call(sb.from("products").select("*").order("created_at", {ascending: false}));
-  $("#v").innerHTML = `<form id="pf2" class="card"><h2>Add a garment</h2><label>Name<input name="name" required></label><label>Description<input name="description"></label>
+  $("#v").innerHTML = `<form id="pf2" class="card"><h2>Add a product</h2><label>Name<input name="name" required></label><label>Description<input name="description"></label>
     <label>Price (₹)<input name="price" type="number" min="1" step="0.01" required inputmode="decimal"></label><label>PV (business volume)<input name="pv" type="number" min="0" step="0.01" value="0" required inputmode="decimal"></label>
-    <button class="btn">Add garment</button></form>
+    <button class="btn">Add product</button></form>
   ${p.map(x => `<div class="card"><div class="row" style="border:0"><span><b>${esc(x.name)}</b><br><span class="note">${inr(x.price)}, ${+x.pv} PV</span></span><button class="link" data-id="${x.id}" data-a="${x.active ? 0 : 1}">${x.active ? "Hide" : "Show"}</button></div></div>`).join("")}`;
   $("#pf2").onsubmit = e => {
     e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
-    act($(".btn"), async () => { await call(sb.from("products").insert({name: f.name.trim(), description: f.description.trim() || null, price: +f.price, pv: +f.pv})); toast("Garment added."); await prodm(); });
+    act($(".btn"), async () => { await call(sb.from("products").insert({name: f.name.trim(), description: f.description.trim() || null, price: +f.price, pv: +f.pv})); toast("Product added."); await prodm(); });
   };
   $("#v").querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(b, async () => { await call(sb.from("products").update({active: b.dataset.a === "1"}).eq("id", b.dataset.id)); await prodm(); }));
 }
