@@ -74,11 +74,11 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .id{color:#f9c929}
 h1.nm{font-size:1.9rem;margin:6px 0}
 .f{display:block}.f b{display:block;font-size:1.05rem;margin-top:2px;word-break:break-word}
-.sec{color:#fff;font-size:1.15rem;margin:22px 0 10px}
+.sec{color:var(--mut);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px}
 .ctr{text-align:center}
-.av{position:relative;width:120px;height:120px;margin:4px auto 10px;border-radius:50%;background:#0f4aa0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700}
+.av{position:relative;width:96px;height:96px;margin:0 auto 10px;border-radius:50%;background:#0f4aa0;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700;border:1px solid rgba(255,255,255,.16)}
 .av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
-.cam{position:absolute;right:-4px;bottom:0;width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.cam{position:absolute;right:-3px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.05rem;border:2px solid var(--card)}
 .phl{color:#8c9bff;font-weight:700;letter-spacing:.03em}
 .btn+.btn{margin-top:10px}
 [hidden]{display:none!important}
@@ -86,7 +86,12 @@ h1.nm{font-size:1.9rem;margin:6px 0}
 .idf span{display:flex;align-items:center;padding:0 12px;background:var(--line);border-radius:10px 0 0 10px;font-weight:700;color:#f9c929;font-size:.95rem}
 .idf input{margin-top:0;border-radius:0 10px 10px 0}
 .idl{display:inline-block;line-height:1.15;font-weight:700}
-button.cam{border:0;color:#16130a;font-size:1.3rem}
+button.cam{border:0;color:#16130a;font-size:1.05rem}
+.bdg{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);background:var(--bg)}
+.bdg.ok{color:#7ddc9a;border-color:rgba(125,220,154,.35);background:rgba(125,220,154,.08)}
+.ov .row{padding:11px 0;font-variant-numeric:tabular-nums}
+.ov .row span:first-child{color:var(--mut);font-size:.86rem}
+.ov .row b{font-size:.95rem;text-align:right;word-break:break-word}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:20}
 .sheet{width:100%;max-width:560px;background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));text-align:center}
 .sheet canvas{width:280px;height:280px;border-radius:50%;touch-action:none;margin:0 auto 12px;display:block;background:#000}
@@ -577,6 +582,7 @@ const val = x => x || "Not provided";
 const fld = (l, x, c = "") => `<div class="card f"><span class="note">${l}</span><b class="${c}">${esc(val(x))}</b></div>`;
 const fldH = (l, h, c = "") => `<div class="card f"><span class="note">${l}</span><b class="${c}">${h}</b></div>`;
 const fmt = d => d ? new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "long", year: "numeric"}) : "";
+const toBlob = (c, q) => new Promise(r => c.toBlob(r, "image/jpeg", q));
 function cropper(src, onSave) {
   const m = document.createElement("div"); m.className = "modal";
   m.innerHTML = `<div class="sheet"><canvas id="cv" width="280" height="280"></canvas><input type="range" id="zm" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><button class="btn" id="sv">Save photo</button><button class="link" id="cn">Cancel</button></div>`;
@@ -597,10 +603,11 @@ function cropper(src, onSave) {
   };
   $("#cn", m).onclick = () => m.remove();
   $("#sv", m).onclick = () => act($("#sv", m), async () => {
-    const o = document.createElement("canvas"); o.width = o.height = 512;
-    const f = 512 / V, [w, h] = dims();
+    const o = document.createElement("canvas"); o.width = o.height = 360;
+    const f = 360 / V, [w, h] = dims();
     o.getContext("2d").drawImage(img, ox * f, oy * f, w * f, h * f);
-    const blob = await new Promise(r => o.toBlob(r, "image/jpeg", 0.85));
+    let blob = await toBlob(o, 0.72);
+    if (blob && blob.size > 122880) blob = await toBlob(o, 0.55);
     if (!blob) { toast("Could not save the photo.", true); return; }
     await onSave(blob); m.remove();
   });
@@ -630,10 +637,15 @@ function photoMenu(url) {
 async function profile() {
   let url = "";
   if (me.photo_path) url = (await sb.storage.from("avatars").createSignedUrl(me.photo_path, 3600)).data?.signedUrl || "";
+  const st = String(me.status || "active"), ok = st.toLowerCase() === "active";
+  const loc = [me.city, me.state, me.country].map(x => String(x || "").trim()).filter(Boolean).join(", ") || "Not provided";
   $("#v").innerHTML = `<div class="card ctr"><div class="av">${url ? `<img src="${esc(url)}" alt="Profile photo">` : esc((me.full_name || "M")[0].toUpperCase())}<button class="cam" id="cam" aria-label="Photo options">📷</button></div>
     <input type="file" id="ph" accept="image/*" hidden>
-    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="idw" style="font-size:1.25rem;font-weight:700;margin:0 0 6px">${idHtml(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
-  <h3 class="sec">PROFILE OVERVIEW</h3>${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}${fld("Location", me.city)}
+    <h2 class="nm" style="font-size:1.45rem;margin:10px 0 4px">${esc(me.full_name || "Member")}</h2>
+    <p class="idw" style="font-size:1.05rem;font-weight:700;margin:0 0 8px">${idHtml(me.member_code)}</p>
+    <span class="bdg${ok ? " ok" : ""}">${esc(st.toUpperCase())}</span></div>
+  <h3 class="sec">PROFILE OVERVIEW</h3>
+  <div class="card ov"><div class="row"><span>Email address</span><b>${esc(val(me.email))}</b></div><div class="row"><span>Mobile number</span><b>${esc(val(me.mobile))}</b></div><div class="row"><span>Location</span><b>${esc(loc)}</b></div></div>
   <button class="btn" id="od">OPEN PROFILE DETAILS</button>`;
   $("#od").onclick = () => go("pdetails");
   $("#cam").onclick = () => photoMenu(url);
@@ -875,4 +887,4 @@ else {
 }
 </script>
 </body>
-</html>
+  </html>
