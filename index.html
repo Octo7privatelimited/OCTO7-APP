@@ -108,11 +108,31 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#2a2b33}
 select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23c5a059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
 .idf input[readonly]{opacity:.8}
+.w2{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:max(34px,env(safe-area-inset-top)) 22px max(24px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
+.w2 .wtop img{display:block;width:min(66vw,300px);margin:6vh auto 0}
+.w2 h1{font-size:3rem;letter-spacing:.08em;margin:6vh 0 0}
+.w2 .wmid img{display:block;width:min(74vw,330px);margin:0 auto}
+.w2 .wbot{width:100%;max-width:440px}
+.signin{display:block;width:100%;padding:18px;border:0;border-radius:40px;background:#fff;color:#1b2440;font:inherit;font-size:1.5rem;font-weight:600}
+.su{color:#e8e9ee;margin:18px 0 26px;font-size:1.05rem}
+.sup{background:none;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;padding:0}
+.wf{display:flex;justify-content:center;flex-wrap:nowrap;align-items:center;gap:0 4px;font-size:.8rem}
+.wf button{background:none;border:0;color:#d9dbe3;font:inherit;padding:10px 3px;white-space:nowrap}
+.wf i{color:#7d8090;font-style:normal}
+@keyframes enter{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.enter{animation:enter .55s ease both}
+#splash{position:fixed;inset:0;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;transition:opacity .5s ease,transform .5s ease}
+#splash img{width:min(60vw,280px);opacity:0;transform:scale(.95)}
+#splash img.go{animation:pop 1s ease-out forwards}
+@keyframes pop{to{opacity:1;transform:scale(1)}}
+#splash.out{opacity:0;transform:translateY(-18px)}
+textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <div id="toast" role="status"></div>
+<div id="splash" hidden><img src="splash.webp" alt="OCTO7"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 const SB_URL = "https://xqckhmrzdzhsdronrbow.supabase.co", SB_KEY = "sb_publishable_kvOcNoJlS_YTk0vf8N4HBg_WWrWLsGp";
@@ -152,15 +172,28 @@ async function act(btn, fn) {
 
 /* ---------- welcome / sign in / register ---------- */
 function welcomeView() {
-  app.innerHTML = `<div class="wel"><div class="hd"><small>Welcome to</small><b>OCTO7</b></div>
-  <div><div class="lg"><img src="logo.png" alt="OCTO7 logo" width="210" height="210" onerror="this.parentNode.remove()"></div>
-  <p class="slogan" style="margin-top:20px">Together for a better tomorrow</p>
-  <p class="sub">Quality products, entrepreneurship and a growing network.</p></div>
-  <div class="acts"><button class="wb g" id="bl">Member Login</button><button class="wb p" id="br">New Member Registration</button>
-  <p class="nt">A sponsor ID is needed to register. No sponsor ID? Contact the company.</p></div>
-  <div class="ft">OCTO7 India • Dream • Network • Grow</div></div>`;
-  $("#bl").onclick = () => authView("login");
-  $("#br").onclick = () => authView("reg");
+  app.innerHTML = `<div class="w2 enter"><div class="wtop"><img src="wordmark.webp" alt="OCTO7" onerror="this.replaceWith(Object.assign(document.createElement('h1'),{textContent:'OCTO7'}))"></div>
+  <div class="wmid"><img src="globe.webp" alt="OCTO7 logo" onerror="this.remove()"></div>
+  <div class="wbot"><button class="signin" id="si">Sign In</button><p class="su">Don’t have an account? <button class="sup" id="su">Sign Up</button></p>
+  <div class="wf">${[["about", "About us"], ["products", "Products"], ["opp", "Opportunity"], ["contact", "Contact us"]].map(([k, l], i) => `${i ? "<i>|</i>" : ""}<button data-k="${k}">${l}</button>`).join("")}</div></div></div>`;
+  $("#si").onclick = () => authView("login");
+  $("#su").onclick = () => authView("reg");
+  app.querySelectorAll(".wf button").forEach(b => b.onclick = () => pubView(b.dataset.k));
+}
+const PUBT = {about: "About us", products: "Products", opp: "Opportunity", contact: "Contact us"};
+async function pubView(k) {
+  app.innerHTML = `<div class="tb enter"><button class="bk" id="bk" aria-label="Back">←</button><b>${PUBT[k]}</b></div><main id="v" class="enter"><p class="mut">Loading…</p></main>`;
+  $("#bk").onclick = welcomeView;
+  const blk = t => t ? `<div class="card" style="white-space:pre-wrap">${esc(t)}</div>` : '<div class="card"><p class="mut">This information will be added soon.</p></div>';
+  if (k === "products") {
+    const {data} = await sb.from("products").select("id,name,description,price").eq("active", true).order("created_at");
+    $("#v").innerHTML = (data || []).map(x => `<div class="card"><b>${esc(x.name)}</b><br><span class="note">${esc(x.description || "")}</span><br><b>${inr(x.price)}</b></div>`).join("") || blk("");
+    return;
+  }
+  const i = (await sb.rpc("public_info")).data || {};
+  if (k === "about") $("#v").innerHTML = blk(i.about_text);
+  else if (k === "opp") $("#v").innerHTML = blk(i.opportunity_text);
+  else $("#v").innerHTML = `<div class="card">${i.help_phone ? `<div class="row"><span>Phone</span><a class="link" href="tel:${esc(i.help_phone)}">${esc(i.help_phone)}</a></div>` : ""}${i.help_email ? `<div class="row"><span>Email</span><a class="link" href="mailto:${esc(i.help_email)}">${esc(i.help_email)}</a></div>` : ""}${i.help_hours ? `<div class="row"><span>Hours</span><b>${esc(i.help_hours)}</b></div>` : ""}${i.help_phone || i.help_email || i.help_hours ? "" : '<p class="mut">Contact details will be added soon.</p>'}</div>`;
 }
 
 function authView(mode = "login") {
@@ -323,7 +356,7 @@ const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu",
   shop: {t: "Products & Catalog", f: shop}, orders: {t: "My Purchases / Orders", f: orders}, wallet: {t: "Wallet & Withdrawals", f: wallet}, payouts: {t: "Payout Details", f: payouts},
   coupons: {t: "My Coupons & Pins", f: coupons}, notes: {t: "Notifications", f: notes}, password: {t: "Change Password", f: password}, soon: {t: "", f: soon}, help: {t: "Help Line & Support", f: async () => help()},
   bank: {t: "Bank Details & KYC", f: bank}, kycdocs: {t: "KYC Documents", f: kycdocs}, fa: {t: "", f: fa}, cpd: {t: "Coupon & Pin Dashboard", f: cpd}, cpg: {t: "Generate Pin & Distribution", f: cpg},
-  cph: {t: "Coupon & Pin History", f: cph}, wdm: {t: "Withdrawal Management", f: wdm}, kycr: {t: "KYC Review", f: kycr}, ords: {t: "Orders & Delivery", f: ords}, prodm: {t: "Products", f: prodm}, bvrun: {t: "Daily BV Calculation", f: bvrun}};
+  cph: {t: "Coupon & Pin History", f: cph}, wdm: {t: "Withdrawal Management", f: wdm}, kycr: {t: "KYC Review", f: kycr}, ords: {t: "Orders & Delivery", f: ords}, prodm: {t: "Products", f: prodm}, bvrun: {t: "Daily BV Calculation", f: bvrun}, pubedit: {t: "Website Pages", f: pubedit}};
 
 function go(p, push = true) { if (push && page !== p) hist.push(page); page = p; render(); window.scrollTo(0, 0); }
 function faTitle() { let l = FA, t = "Founder Administration"; for (const i of faPath) { t = l[i][0]; l = l[i][1]; } return t; }
@@ -338,7 +371,7 @@ function render() {
   Promise.resolve().then(() => P.f()).catch(() => {});
 }
 async function portal() {
-  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="logo.png" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="globe.webp" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
 }
 const ICO = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
@@ -692,7 +725,7 @@ async function kycdocs() {
 }
 
 /* ---------- founder administration ---------- */
-const FA = [["Human Resource (HR)"], ["Administration"],
+const FA = [["Human Resource (HR)"], ["Administration", [["Website Pages", "pubedit"]]],
   ["Accounts & Finance", [["Member Joining Accounts"],
     ["BV Calculation & Matching", [["All Members BV Summary"], ["Daily BV Calculation", "bvrun"], ["Left BV & Right BV"], ["First Match 2:1 / 1:2"], ["Subsequent Matching 1:1"], ["Matched BV"], ["Unmatched BV"], ["Carry Forward BV"], ["Forfeited BV"], ["Daily Capping"], ["Eligible BV For Commission"]]],
     ["Payment Verification"], ["Bank Transfer Management"], ["Member Wallet"], ["Commission Calculation"], ["Withdrawal Management", "wdm"], ["Child ID to Main ID Transfers"],
@@ -808,8 +841,29 @@ async function bvrun() {
   };
 }
 
+async function pubedit() {
+  adm();
+  const i = (await sb.rpc("public_info")).data || {};
+  $("#v").innerHTML = `<form id="pe" class="card"><h2>Pages on the welcome screen</h2><p class="note">Have the wording checked by your legal adviser before you publish it.</p>
+    <label>About us<textarea name="about_text">${esc(i.about_text)}</textarea></label><label>Opportunity<textarea name="opportunity_text">${esc(i.opportunity_text)}</textarea></label>
+    <label>Contact phone<input name="help_phone" value="${esc(i.help_phone)}"></label><label>Contact email<input name="help_email" type="email" value="${esc(i.help_email)}"></label>
+    <label>Contact hours<input name="help_hours" value="${esc(i.help_hours)}"></label><button class="btn">Save</button></form>`;
+  $("#pe").onsubmit = e => {
+    e.preventDefault(); const d = Object.fromEntries(new FormData(e.target));
+    act($(".btn"), async () => { for (const [k, v] of Object.entries(d)) await call(sb.from("app_settings").update({value: v.trim()}).eq("key", k)); Object.assign(cfg, d); toast("Saved."); });
+  };
+}
 sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") welcomeView(); });
-sb.auth.getSession().then(({data}) => data.session ? loadMe() : welcomeView());
+const start = () => sb.auth.getSession().then(({data}) => data.session ? loadMe() : welcomeView());
+let seen = false;
+try { seen = sessionStorage.getItem("o7splash") === "1"; sessionStorage.setItem("o7splash", "1"); } catch (e) {}
+if (seen) start();
+else {
+  const sp = $("#splash"), im = $("img", sp); sp.hidden = false;
+  const run = () => { im.classList.add("go"); setTimeout(() => { sp.classList.add("out"); start(); setTimeout(() => sp.remove(), 600); }, 1900); };
+  im.onerror = () => { sp.remove(); start(); };
+  if (im.complete && im.naturalWidth) run(); else im.onload = run;
+}
 </script>
 </body>
 </html>
