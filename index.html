@@ -95,7 +95,7 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .tile{width:calc((100% - 20px) / 3);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;min-height:100px;padding:16px 6px 10px;border:1px solid rgba(197,160,89,.3);border-radius:14px;background:var(--card);color:#e8ecf7;font:inherit;font-size:.78rem;line-height:1.25;text-align:center;overflow-wrap:anywhere;transition:border-color .12s,background .12s}
 .tile span{display:flex;color:#c5a059}
 .tile:active,.tile:focus-visible{border-color:#f0cf7d;background:#2a2b33;outline:0;transform:scale(.98)}
-.wl{color:#aeb4c2}.pt .nm{color:#fff}
+.wl{color:#d4af37}.idw{color:#fff}.pt .nm{color:#fff}
 .pw{position:relative}.pw input{padding-right:54px}
 .eye{position:absolute;right:4px;top:calc(50% + 2px);transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:1.25rem}
 .btn.gold{background:#fff;color:#17171b}
@@ -108,25 +108,28 @@ button.cam{border:0;color:#16130a;font-size:1.3rem}
 .nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#2a2b33}
 select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23c5a059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
 .idf input[readonly]{opacity:.8}
-.w2{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:max(34px,env(safe-area-inset-top)) 22px max(24px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
-.w2 .wtop img{display:block;width:min(66vw,300px);margin:6vh auto 0}
-.w2 h1{font-size:3rem;letter-spacing:.08em;margin:6vh 0 0}
-.w2 .wmid img{display:block;width:min(74vw,330px);margin:0 auto}
+.w2{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;text-align:center;padding:max(16px,env(safe-area-inset-top)) 22px max(10px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
+.w2 .wtop img{display:block;width:auto;max-width:62vw;max-height:9dvh;margin:1dvh auto 0}
+.w2 h1{font-size:2.6rem;letter-spacing:.08em;margin:2dvh 0 0}
+.w2 .wmid{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.w2 .wmid img{display:block;width:auto;height:auto;max-width:78vw;max-height:36dvh;margin:0 auto}
 .w2 .wbot{width:100%;max-width:440px}
-.signin{display:block;width:100%;padding:18px;border:0;border-radius:40px;background:#fff;color:#1b2440;font:inherit;font-size:1.5rem;font-weight:600}
-.su{color:#e8e9ee;margin:18px 0 26px;font-size:1.05rem}
+.signin{display:block;width:100%;padding:15px;border:0;border-radius:40px;background:#fff;color:#1b2440;font:inherit;font-size:1.5rem;font-weight:600}
+.su{color:#e8e9ee;margin:12px 0 8px;font-size:1.02rem}
 .sup{background:none;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;padding:0}
-.wf{display:flex;justify-content:center;flex-wrap:nowrap;align-items:center;gap:0 4px;font-size:.8rem}
-.wf button{background:none;border:0;color:#d9dbe3;font:inherit;padding:10px 3px;white-space:nowrap}
+.wf{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:clamp(12.5px,3.7vw,14px)}
+.wf button{background:none;border:0;color:#fff;font:inherit;font-weight:700;padding:10px 2px;white-space:nowrap}
 .wf i{color:#7d8090;font-style:normal}
 @keyframes enter{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
 .enter{animation:enter .55s ease both}
-#splash{position:fixed;inset:0;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;transition:opacity .5s ease,transform .5s ease}
+#splash{position:fixed;inset:0;height:100vh;height:100dvh;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;transition:opacity .5s ease,transform .5s ease}
 #splash img{width:min(60vw,280px);opacity:0;transform:scale(.95)}
 #splash img.go{animation:pop 1s ease-out forwards}
 @keyframes pop{to{opacity:1;transform:scale(1)}}
 #splash.out{opacity:0;transform:translateY(-18px)}
 textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+#app.over{position:relative;z-index:61;background:#17171b;min-height:100dvh;animation:enter .55s ease both}
+.noenter .enter{animation:none}
 </style>
 </head>
 <body>
@@ -629,7 +632,7 @@ async function profile() {
   if (me.photo_path) url = (await sb.storage.from("avatars").createSignedUrl(me.photo_path, 3600)).data?.signedUrl || "";
   $("#v").innerHTML = `<div class="card ctr"><div class="av">${url ? `<img src="${esc(url)}" alt="Profile photo">` : esc((me.full_name || "M")[0].toUpperCase())}<button class="cam" id="cam" aria-label="Photo options">📷</button></div>
     <input type="file" id="ph" accept="image/*" hidden>
-    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="id" style="font-size:1.25rem;margin:0 0 6px">${idHtml(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
+    <h2 class="nm" style="font-size:1.5rem;margin:14px 0 4px">${esc(me.full_name || "Member")}</h2><p class="idw" style="font-size:1.25rem;font-weight:700;margin:0 0 6px">${idHtml(me.member_code)}</p><p class="mut">Account status: ${esc(me.status)}</p></div>
   <h3 class="sec">PROFILE OVERVIEW</h3>${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}${fld("Location", me.city)}
   <button class="btn" id="od">OPEN PROFILE DETAILS</button>`;
   $("#od").onclick = () => go("pdetails");
@@ -641,7 +644,7 @@ async function pdetails() {
   $("#v").innerHTML = `<h3 class="sec">Personal Information</h3>${fld("Full name", me.full_name, "nm")}${fld("Date of birth", me.dob)}${fld("Gender", me.gender)}${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}
   <h3 class="sec">Address Details</h3>${fld("House / building", me.house)}${fld("Street / area", me.street)}${fld("City / town", me.city)}${fld("District", me.district)}${fld("State", me.state)}${fld("Pincode", me.pincode)}${fld("Country", me.country)}
   <h3 class="sec">Nominee Details</h3>${fld("Nominee full name", me.nominee_name, "nm")}${fld("Relationship with member", me.nominee_relation)}${fld("Date of birth", me.nominee_dob)}${fld("Gender", me.nominee_gender)}${fld("Mobile number", me.nominee_mobile)}${fld("Email address", me.nominee_email)}${fld("Complete address", me.nominee_address)}
-  <h3 class="sec">Account Details</h3>${fldH("Member ID", idHtml(me.member_code), "id")}${fldH("Sponsor ID", sp?.member_code ? idHtml(sp.member_code) : "Not assigned", "id")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
+  <h3 class="sec">Account Details</h3>${fldH("Member ID", idHtml(me.member_code), "idw")}${fldH("Sponsor ID", sp?.member_code ? idHtml(sp.member_code) : "Not assigned", "idw")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
   <h3 class="sec">Account Security</h3>${fld("Email verification", authUser?.email_confirmed_at ? "Verified" : "Not verified")}${fld("Mobile verification", "Not verified / unavailable")}
   <button class="btn" id="ed">EDIT PROFILE DETAILS</button>`;
   $("#ed").onclick = () => go("pedit");
@@ -855,12 +858,18 @@ async function pubedit() {
 }
 sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") welcomeView(); });
 const start = () => sb.auth.getSession().then(({data}) => data.session ? loadMe() : welcomeView());
-let seen = false;
-try { seen = sessionStorage.getItem("o7splash") === "1"; sessionStorage.setItem("o7splash", "1"); } catch (e) {}
-if (seen) start();
+const nv = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
+if (nv && nv.type !== "navigate") start();
 else {
   const sp = $("#splash"), im = $("img", sp); sp.hidden = false;
-  const run = () => { im.classList.add("go"); setTimeout(() => { sp.classList.add("out"); start(); setTimeout(() => sp.remove(), 600); }, 1900); };
+  const run = () => {
+    im.classList.add("go");
+    setTimeout(() => {
+      document.body.classList.add("noenter"); app.classList.add("over");
+      start();
+      setTimeout(() => { app.classList.remove("over"); document.body.classList.remove("noenter"); sp.remove(); }, 650);
+    }, 3500);
+  };
   im.onerror = () => { sp.remove(); start(); };
   if (im.complete && im.naturalWidth) run(); else im.onload = run;
 }
