@@ -118,24 +118,24 @@ button.cam{border:0;color:#17171b;font-size:1.05rem}
 .nd.gap{border:0;background:none}.nd.root{border-color:#ffffff;background:#2a2b33}
 select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
 .idf input[readonly]{opacity:.8}
-.w2{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;text-align:center;padding:max(16px,env(safe-area-inset-top)) 22px max(10px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
-.w2 .wtop img{display:block;width:auto;max-width:62vw;max-height:9dvh;margin:1dvh auto 0}
-.w2 h1{font-size:2.6rem;letter-spacing:.08em;margin:2dvh 0 0}
-.w2 .wmid{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
-.w2 .wmid img{display:block;width:auto;height:auto;max-width:78vw;max-height:36dvh;margin:0 auto}
-.w2 .wbot{width:100%;max-width:440px}
+.w2{height:100vh;height:100dvh;width:100%;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;text-align:center;padding:max(16px,env(safe-area-inset-top)) 22px max(10px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
+.w2 .wtop{width:100%;display:flex;justify-content:center;align-items:center}
+.w2 .wtop img{display:block;width:auto;max-width:62vw;max-height:9dvh;margin:1dvh auto 0;object-fit:contain}
+.w2 h1{font-size:2.6rem;letter-spacing:.08em;margin:2dvh 0 0;text-align:center}
+.w2 .wmid{flex:1;width:100%;min-height:0;display:flex;align-items:center;justify-content:center}
+.w2 .wmid img{display:block;width:auto;height:auto;max-width:72vw;max-height:34dvh;margin:0 auto;object-fit:contain}
+.w2 .wbot{width:100%;max-width:440px;margin:0 auto}
 .signin{display:block;width:100%;padding:15px;border:0;border-radius:40px;background:#fff;color:#1b2440;font:inherit;font-size:1.5rem;font-weight:600}
 .su{color:#e8e9ee;margin:12px 0 8px;font-size:1.02rem}
 .sup{background:none;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;padding:0}
 .wf{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:clamp(12.5px,3.7vw,14px)}
 .wf button{background:none;border:0;color:#fff;font:inherit;font-weight:700;padding:10px 2px;white-space:nowrap}
 .wf i{color:#7d8090;font-style:normal}
-@keyframes enter{from{opacity:0}to{opacity:1}}
-.enter{animation:enter .22s ease-out both}
-#splash{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;opacity:1;transition:opacity .16s ease-out}
-#splash img{width:min(60vw,280px);opacity:0;transform:scale(.65);filter:brightness(1.16) contrast(1.06) drop-shadow(0 0 18px rgba(255,255,255,.28));will-change:transform,opacity,filter}
-#splash img.go{animation:pop .42s cubic-bezier(.22,1,.36,1) forwards}
-@keyframes pop{0%{opacity:0;transform:scale(.65)}70%{opacity:1}100%{opacity:1;transform:scale(1)}}
+.enter{animation:none}
+#splash{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;opacity:1}
+#splash img{width:min(60vw,280px);opacity:0;transform:scale(.35);filter:brightness(1.16) contrast(1.06) drop-shadow(0 0 18px rgba(255,255,255,.28));will-change:transform,opacity,filter}
+#splash img.go{animation:pop 1.4s ease-out forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.35)}25%{opacity:1}100%{opacity:1;transform:scale(1)}}
 #splash.out{opacity:0;pointer-events:none}
 textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
 #app.over{position:relative;z-index:61;background:#17171b;min-height:100dvh}
@@ -887,56 +887,4 @@ async function prodm() {
     e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
     act($(".btn"), async () => { await call(sb.from("products").insert({name: f.name.trim(), description: f.description.trim() || null, price: +f.price, pv: +f.pv})); toast("Product added."); await prodm(); });
   };
-  $("#v").querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(b, async () => { await call(sb.from("products").update({active: b.dataset.a === "1"}).eq("id", b.dataset.id)); await prodm(); }));
-}
-async function bvrun() {
-  adm();
-  const t = new Date(Date.now() + 5.5 * 3600e3); t.setUTCDate(t.getUTCDate() - 1);
-  const r = await call(sb.from("binary_runs").select("*").order("run_date", {ascending: false}).limit(15));
-  $("#v").innerHTML = `<form id="bf2" class="card"><h2>Daily BV calculation</h2><p class="note">Run once for each finished day (Indian time). A day cannot be run twice.</p>
-    <label>Day<input name="d" type="date" value="${t.toISOString().slice(0, 10)}" required></label><button class="btn">Run matching for this day</button></form>
-  <div class="card"><h2>Days already run</h2>${r.map(x => `<div class="row"><span>${esc(x.run_date)}</span><span class="note">${day(x.ran_at)}</span></div>`).join("") || '<p class="mut">None yet.</p>'}</div>`;
-  $("#bf2").onsubmit = e => {
-    e.preventDefault();
-    act($(".btn"), async () => { const n = await call(sb.rpc("run_daily_binary_matching", {p_run_date: new FormData(e.target).get("d")})); toast(`Done. ${n} members processed.`); await bvrun(); });
-  };
-}
-
-async function pubedit() {
-  adm();
-  const i = (await sb.rpc("public_info")).data || {};
-  $("#v").innerHTML = `<form id="pe" class="card"><h2>Pages on the welcome screen</h2><p class="note">Have the wording checked by your legal adviser before you publish it.</p>
-    <label>About us<textarea name="about_text">${esc(i.about_text)}</textarea></label><label>Opportunity<textarea name="opportunity_text">${esc(i.opportunity_text)}</textarea></label>
-    <label>Contact phone<input name="help_phone" value="${esc(i.help_phone)}"></label><label>Contact email<input name="help_email" type="email" value="${esc(i.help_email)}"></label>
-    <label>Contact hours<input name="help_hours" value="${esc(i.help_hours)}"></label><button class="btn">Save</button></form>`;
-  $("#pe").onsubmit = e => {
-    e.preventDefault(); const d = Object.fromEntries(new FormData(e.target));
-    act($(".btn"), async () => { for (const [k, v] of Object.entries(d)) await call(sb.from("app_settings").update({value: v.trim()}).eq("key", k)); Object.assign(cfg, d); toast("Saved."); });
-  };
-}
-sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") welcomeView(); });
-const start = () => sb.auth.getSession().then(({data}) => data.session ? loadMe() : welcomeView());
-const nv = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
-if (nv && nv.type !== "navigate") start();
-else {
-  const sp = $("#splash"), im = $("img", sp); sp.hidden = false;
-  const run = () => {
-    im.classList.add("go");
-    setTimeout(() => {
-      document.body.classList.add("noenter");
-      app.classList.add("over");
-      start();
-      requestAnimationFrame(() => sp.classList.add("out"));
-      setTimeout(() => {
-        app.classList.remove("over");
-        document.body.classList.remove("noenter");
-        sp.remove();
-      }, 200);
-    }, 450);
-  };
-  im.onerror = () => { sp.remove(); start(); };
-  if (im.complete && im.naturalWidth) run(); else im.onload = run;
-}
-</script>
-</body>
-</html>
+  $("#v").
