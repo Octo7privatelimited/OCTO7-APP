@@ -83,7 +83,7 @@ h1.nm{font-size:1.9rem;margin:6px 0}
 .btn+.btn{margin-top:10px}
 [hidden]{display:none!important}
 .idf{display:flex;align-items:stretch;margin-top:4px}
-.idf span{display:flex;align-items:center;padding:0 12px;background:var(--line);border-radius:10px 0 0 10px;font-weight:700;color:#f9c929;font-size:.95rem}
+.idf span{display:flex;align-items:center;padding:0 12px;background:var(--line);border-radius:10px 0 0 10px;font-weight:700;color:#ffffff;font-size:.95rem}
 .idf input{margin-top:0;border-radius:0 10px 10px 0}
 .idl{display:inline-block;line-height:1.15;font-weight:700}
 button.cam{border:0;color:#16130a;font-size:1.05rem}
@@ -92,6 +92,8 @@ button.cam{border:0;color:#16130a;font-size:1.05rem}
 .ov .row{padding:11px 0;font-variant-numeric:tabular-nums}
 .ov .row span:first-child{color:var(--mut);font-size:.86rem}
 .ov .row b{font-size:.95rem;text-align:right;word-break:break-word}
+.ov.pov-stack .row{flex-direction:column;align-items:flex-start;gap:4px}
+.ov.pov-stack .row b{text-align:left;color:#ffffff}
 .pdet-card .row.col{flex-direction:column;align-items:flex-start;gap:3px}
 .pdet-card .row.col span{color:#ffffff}
 .pdet-card .row.col b,.pdet-card .row.col b *{text-align:left;word-break:break-word;font-size:1rem;color:#ffffff}
@@ -107,14 +109,14 @@ button.cam{border:0;color:#16130a;font-size:1.05rem}
 .pw{position:relative}.pw input{padding-right:54px}
 .eye{position:absolute;right:4px;top:calc(50% + 2px);transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:1.25rem}
 .btn.gold{background:#fff;color:#17171b}
-.btn.ghost{background:#22232a;color:#c5a059;border:1px solid #c5a059}
-.btn.ghost:active{background:#2a2b33;border-color:#f0cf7d}
+.btn.ghost{background:#22232a;color:#ffffff;border:1px solid #ffffff}
+.btn.ghost:active{background:#2a2b33;border-color:#ffffff}
 .bt{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .nd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 4px;min-height:84px;border:1px solid rgba(197,160,89,.35);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:.78rem;text-align:center;overflow-wrap:anywhere}
 .nd b{font-size:.9rem}.nd span{color:#c5a059;font-size:.72rem}.nd small{color:var(--mut);font-size:.7rem}
 .nd.vac{border-style:dashed;background:none;color:var(--mut)}.nd.vac b{font-size:1.5rem;color:#c5a059}
 .nd.gap{border:0;background:none}.nd.root{border-color:#c5a059;background:#2a2b33}
-select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23c5a059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
+select{-webkit-appearance:none;appearance:none;padding-right:42px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
 .idf input[readonly]{opacity:.8}
 .w2{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;text-align:center;padding:max(16px,env(safe-area-inset-top)) 22px max(10px,env(safe-area-inset-bottom));background:#17171b;color:#fff}
 .w2 .wtop img{display:block;width:auto;max-width:62vw;max-height:9dvh;margin:1dvh auto 0}
@@ -648,7 +650,7 @@ async function profile() {
     <p class="idw" style="font-size:1.05rem;font-weight:700;margin:0 0 8px">${idHtml(me.member_code)}</p>
     <span class="bdg${ok ? " ok" : ""}">${esc(st.toUpperCase())}</span></div>
   <h3 class="sec">PROFILE OVERVIEW</h3>
-  <div class="card ov"><div class="row"><span>Email address</span><b>${esc(val(me.email))}</b></div><div class="row"><span>Mobile number</span><b>${esc(val(me.mobile))}</b></div><div class="row"><span>Location</span><b>${esc(loc)}</b></div></div>
+  <div class="card ov pov-stack"><div class="row"><span>Email address</span><b>${esc(val(me.email))}</b></div><div class="row"><span>Mobile number</span><b>${esc(val(me.mobile))}</b></div><div class="row"><span>Location</span><b>${esc(loc)}</b></div></div>
   <button class="btn" id="od">OPEN PROFILE DETAILS</button>`;
   $("#od").onclick = () => go("pdetails");
   $("#cam").onclick = () => photoMenu(url);
