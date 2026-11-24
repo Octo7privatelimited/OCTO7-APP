@@ -92,6 +92,9 @@ button.cam{border:0;color:#16130a;font-size:1.05rem}
 .ov .row{padding:11px 0;font-variant-numeric:tabular-nums}
 .ov .row span:first-child{color:var(--mut);font-size:.86rem}
 .ov .row b{font-size:.95rem;text-align:right;word-break:break-word}
+.pdet-card .row.col{flex-direction:column;align-items:flex-start;gap:3px}
+.pdet-card .row.col span{color:#ffffff}
+.pdet-card .row.col b,.pdet-card .row.col b *{text-align:left;word-break:break-word;font-size:1rem;color:#ffffff}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:20}
 .sheet{width:100%;max-width:560px;background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));text-align:center}
 .sheet canvas{width:280px;height:280px;border-radius:50%;touch-action:none;margin:0 auto 12px;display:block;background:#000}
@@ -653,11 +656,48 @@ async function profile() {
 }
 async function pdetails() {
   const sp = ((await sb.rpc("get_my_sponsor")).data || [])[0];
-  $("#v").innerHTML = `<h3 class="sec">Personal Information</h3>${fld("Full name", me.full_name, "nm")}${fld("Date of birth", me.dob)}${fld("Gender", me.gender)}${fld("Email address", me.email)}${fld("Mobile number", me.mobile)}
-  <h3 class="sec">Address Details</h3>${fld("House / building", me.house)}${fld("Street / area", me.street)}${fld("City / town", me.city)}${fld("District", me.district)}${fld("State", me.state)}${fld("Pincode", me.pincode)}${fld("Country", me.country)}
-  <h3 class="sec">Nominee Details</h3>${fld("Nominee full name", me.nominee_name, "nm")}${fld("Relationship with member", me.nominee_relation)}${fld("Date of birth", me.nominee_dob)}${fld("Gender", me.nominee_gender)}${fld("Mobile number", me.nominee_mobile)}${fld("Email address", me.nominee_email)}${fld("Complete address", me.nominee_address)}
-  <h3 class="sec">Account Details</h3>${fldH("Member ID", idHtml(me.member_code), "idw")}${fldH("Sponsor ID", sp?.member_code ? idHtml(sp.member_code) : "Not assigned", "idw")}${fld("Sponsor name", sp?.full_name, "nm")}${fld("Date of joining", fmt(me.created_at))}${fld("Account status", me.status)}
-  <h3 class="sec">Account Security</h3>${fld("Email verification", authUser?.email_confirmed_at ? "Verified" : "Not verified")}${fld("Mobile verification", "Not verified / unavailable")}
+  $("#v").innerHTML = `
+  <h3 class="sec">Personal Information</h3>
+  <div class="card ov pdet-card">
+    <div class="row col"><span>Full name</span><b>${esc(val(me.full_name))}</b></div>
+    <div class="row col"><span>Date of birth</span><b>${esc(val(me.dob))}</b></div>
+    <div class="row col"><span>Gender</span><b>${esc(val(me.gender))}</b></div>
+    <div class="row col"><span>Email address</span><b>${esc(val(me.email))}</b></div>
+    <div class="row col"><span>Mobile number</span><b>${esc(val(me.mobile))}</b></div>
+  </div>
+  <h3 class="sec">Address Details</h3>
+  <div class="card ov pdet-card">
+    <div class="row col"><span>House / building</span><b>${esc(val(me.house))}</b></div>
+    <div class="row col"><span>Street / area</span><b>${esc(val(me.street))}</b></div>
+    <div class="row col"><span>City / town</span><b>${esc(val(me.city))}</b></div>
+    <div class="row col"><span>District</span><b>${esc(val(me.district))}</b></div>
+    <div class="row col"><span>State</span><b>${esc(val(me.state))}</b></div>
+    <div class="row col"><span>Pincode</span><b>${esc(val(me.pincode))}</b></div>
+    <div class="row col"><span>Country</span><b>${esc(val(me.country))}</b></div>
+  </div>
+  <h3 class="sec">Nominee Details</h3>
+  <div class="card ov pdet-card">
+    <div class="row col"><span>Nominee full name</span><b>${esc(val(me.nominee_name))}</b></div>
+    <div class="row col"><span>Relationship with member</span><b>${esc(val(me.nominee_relation))}</b></div>
+    <div class="row col"><span>Date of birth</span><b>${esc(val(me.nominee_dob))}</b></div>
+    <div class="row col"><span>Gender</span><b>${esc(val(me.nominee_gender))}</b></div>
+    <div class="row col"><span>Mobile number</span><b>${esc(val(me.nominee_mobile))}</b></div>
+    <div class="row col"><span>Email address</span><b>${esc(val(me.nominee_email))}</b></div>
+    <div class="row col"><span>Complete address</span><b>${esc(val(me.nominee_address))}</b></div>
+  </div>
+  <h3 class="sec">Account Details</h3>
+  <div class="card ov pdet-card">
+    <div class="row col"><span>Member ID</span><b>${idHtml(me.member_code)}</b></div>
+    <div class="row col"><span>Sponsor ID</span><b>${sp?.member_code ? idHtml(sp.member_code) : "Not assigned"}</b></div>
+    <div class="row col"><span>Sponsor name</span><b>${esc(val(sp?.full_name))}</b></div>
+    <div class="row col"><span>Date of joining</span><b>${esc(val(fmt(me.created_at)))}</b></div>
+    <div class="row col"><span>Account status</span><b>${esc(val(me.status))}</b></div>
+  </div>
+  <h3 class="sec">Account Security</h3>
+  <div class="card ov pdet-card">
+    <div class="row col"><span>Email verification</span><b>${authUser?.email_confirmed_at ? "Verified" : "Not verified"}</b></div>
+    <div class="row col"><span>Mobile verification</span><b>Not verified</b></div>
+  </div>
   <button class="btn" id="ed">EDIT PROFILE DETAILS</button>`;
   $("#ed").onclick = () => go("pedit");
 }
@@ -887,4 +927,4 @@ else {
 }
 </script>
 </body>
-  </html>
+</html>
