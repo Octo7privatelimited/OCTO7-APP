@@ -153,7 +153,7 @@ textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;b
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 const SB_URL = "https://xqckhmrzdzhsdronrbow.supabase.co", SB_KEY = "sb_publishable_kvOcNoJlS_YTk0vf8N4HBg_WWrWLsGp";
-const sb = supabase.createClient(SB_URL, SB_KEY);
+const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL, SB_KEY) : null;
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -235,7 +235,6 @@ function authView(mode = "login") {
   };
 }
 
-/* registration form used by the public page, the menu and the vacant places in Genealogy */
 function regHtml(c) {
   const slot = c.mode === "slot";
   return `<form id="rf" class="card">
@@ -293,6 +292,7 @@ function regView() {
 
 /* ---------- after sign in ---------- */
 async function loadMe() {
+  if (!sb) return welcomeView();
   const {data: {user}} = await sb.auth.getUser();
   if (!user) return welcomeView();
   const {data} = await sb.from("members").select("*").eq("id", user.id).maybeSingle();
@@ -887,4 +887,69 @@ async function prodm() {
     e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
     act($(".btn"), async () => { await call(sb.from("products").insert({name: f.name.trim(), description: f.description.trim() || null, price: +f.price, pv: +f.pv})); toast("Product added."); await prodm(); });
   };
-  $("#v").
+  $("#v").querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(b, async () => { await call(sb.from("products").update({active: b.dataset.a === "1"}).eq("id", b.dataset.id)); await prodm(); }));
+}
+async function bvrun() {
+  adm();
+  const t = new Date(Date.now() + 5.5 * 3600e3); t.setUTCDate(t.getUTCDate() - 1);
+  const r = await call(sb.from("binary_runs").select("*").order("run_date", {ascending: false}).limit(15));
+  $("#v").innerHTML = `<form id="bf2" class="card"><h2>Daily BV calculation</h2><p class="note">Run once for each finished day (Indian time). A day cannot be run twice.</p>
+    <label>Day<input name="d" type="date" value="${t.toISOString().slice(0, 10)}" required></label><button class="btn">Run matching for this day</button></form>
+  <div class="card"><h2>Days already run</h2>${r.map(x => `<div class="row"><span>${esc(x.run_date)}</span><span class="note">${day(x.ran_at)}</span></div>`).join("") || '<p class="mut">None yet.</p>'}</div>`;
+  $("#bf2").onsubmit = e => {
+    e.preventDefault();
+    act($(".btn"), async () => { const n = await call(sb.rpc("run_daily_binary_matching", {p_run_date: new FormData(e.target).get("d")})); toast(`Done. ${n} members processed.`); await bvrun(); });
+  };
+}
+
+async function pubedit() {
+  adm();
+  const i = (await sb.rpc("public_info")).data || {};
+  $("#v").innerHTML = `<form id="pe" class="card"><h2>Pages on the welcome screen</h2><p class="note">Have the wording checked by your legal adviser before you publish it.</p>
+    <label>About us<textarea name="about_text">${esc(i.about_text)}</textarea></label><label>Opportunity<textarea name="opportunity_text">${esc(i.opportunity_text)}</textarea></label>
+    <label>Contact phone<input name="help_phone" value="${esc(i.help_phone)}"></label><label>Contact email<input name="help_email" type="email" value="${esc(i.help_email)}"></label>
+    <label>Contact hours<input name="help_hours" value="${esc(i.help_hours)}"></label><button class="btn">Save</button></form>`;
+  $("#pe").onsubmit = e => {
+    e.preventDefault(); const d = Object.fromEntries(new FormData(e.target));
+    act($(".btn"), async () => { for (const [k, v] of Object.entries(d)) await call(sb.from("app_settings").update({value: v.trim()}).eq("key", k)); Object.assign(cfg, d); toast("Saved."); });
+  };
+}
+
+const start = () => {
+  if (!sb || !sb.auth || !sb.auth.getSession) return welcomeView();
+  return sb.auth.getSession().then(({data}) => data && data.session ? loadMe() : welcomeView()).catch(() => welcomeView());
+};
+if (sb && sb.auth && sb.auth.onAuthStateChange) {
+  sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") welcomeView(); });
+}
+
+const params = new URLSearchParams(location.search);
+if (params.get("nosplash") === "1") {
+  const sp = $("#splash"); if (sp) sp.remove();
+  start();
+} else {
+  const sp = $("#splash"), im = $("img", sp);
+  sp.hidden = false;
+  let done = false;
+  const finish = () => {
+    if (done) return; done = true;
+    document.body.classList.add("noenter");
+    app.classList.add("over");
+    start();
+    if (sp) sp.remove();
+    setTimeout(() => {
+      app.classList.remove("over");
+      document.body.classList.remove("noenter");
+    }, 50);
+  };
+  const run = () => {
+    im.classList.add("go");
+    setTimeout(finish, 2400);
+    setTimeout(finish, 3500);
+  };
+  im.onerror = finish;
+  if (im.complete && im.naturalWidth) run(); else im.onload = run;
+}
+</script>
+</body>
+</html>
