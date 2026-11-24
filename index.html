@@ -10,7 +10,7 @@
 <style>
 :root{--bg:#17171b;--card:#222228;--ink:#f1f2f6;--mut:#a7a9b4;--line:#34353d;--brand:#ffffff;--on:#17171b;--bad:#ff8a80;--l:#6c8cff;--r:#ffc20e;color-scheme:dark}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
 body{padding:0}
 header{display:flex;justify-content:space-between;align-items:baseline;max-width:560px;margin:0 auto;padding:14px 16px 4px}
 header span{color:var(--mut);font-size:.9rem;font-variant-numeric:tabular-nums}
@@ -130,16 +130,20 @@ select{-webkit-appearance:none;appearance:none;padding-right:42px;background-ima
 .wf{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:clamp(12.5px,3.7vw,14px)}
 .wf button{background:none;border:0;color:#fff;font:inherit;font-weight:700;padding:10px 2px;white-space:nowrap}
 .wf i{color:#7d8090;font-style:normal}
-@keyframes enter{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
-.enter{animation:enter .55s ease both}
-#splash{position:fixed;inset:0;height:100vh;height:100dvh;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;transition:opacity .5s ease,transform .5s ease}
-#splash img{width:min(60vw,280px);opacity:0;transform:scale(.95)}
-#splash img.go{animation:pop 1s ease-out forwards}
-@keyframes pop{to{opacity:1;transform:scale(1)}}
-#splash.out{opacity:0;transform:translateY(-18px)}
+@keyframes enter{from{opacity:0}to{opacity:1}}
+.enter{animation:enter .22s ease-out both}
+#splash{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;background:#17171b;display:flex;align-items:center;justify-content:center;z-index:60;opacity:1;transition:opacity .16s ease-out}
+#splash img{width:min(60vw,280px);opacity:0;transform:scale(.65);filter:brightness(1.16) contrast(1.06) drop-shadow(0 0 18px rgba(255,255,255,.28));will-change:transform,opacity,filter}
+#splash img.go{animation:pop .42s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.65)}70%{opacity:1}100%{opacity:1;transform:scale(1)}}
+#splash.out{opacity:0;pointer-events:none}
 textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
-#app.over{position:relative;z-index:61;background:#17171b;min-height:100dvh;animation:enter .55s ease both}
+#app.over{position:relative;z-index:61;background:#17171b;min-height:100dvh}
 .noenter .enter{animation:none}
+@media (prefers-reduced-motion:reduce){
+  .enter,#splash img.go{animation:none!important;opacity:1!important;transform:none!important}
+  #splash{transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -919,14 +923,20 @@ else {
   const run = () => {
     im.classList.add("go");
     setTimeout(() => {
-      document.body.classList.add("noenter"); app.classList.add("over");
+      document.body.classList.add("noenter");
+      app.classList.add("over");
       start();
-      setTimeout(() => { app.classList.remove("over"); document.body.classList.remove("noenter"); sp.remove(); }, 650);
-    }, 3500);
+      requestAnimationFrame(() => sp.classList.add("out"));
+      setTimeout(() => {
+        app.classList.remove("over");
+        document.body.classList.remove("noenter");
+        sp.remove();
+      }, 200);
+    }, 450);
   };
   im.onerror = () => { sp.remove(); start(); };
   if (im.complete && im.naturalWidth) run(); else im.onload = run;
 }
 </script>
 </body>
-  </html>
+</html>
