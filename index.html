@@ -52,31 +52,28 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 #toast.bad{background:var(--bad);color:#fff}
 .tb{display:flex;align-items:center;gap:12px;background:var(--bg);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 14px;font-size:1.5rem;position:sticky;top:0;z-index:5}
 .tb b{flex:1;font-weight:700;color:#fff;letter-spacing:.01em}
-.menu{background:#fff;color:#17171b;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700;flex-shrink:0;margin-left:auto}
+.menu{background:#fff;color:#17171b;border:0;border-radius:24px;padding:10px 16px;font:inherit;font-size:.95rem;font-weight:700;flex-shrink:0;margin-left:auto;display:inline-flex;align-items:center;gap:6px;line-height:1}
 .bk{background:none;border:0;color:#fff;font-size:2rem;padding:2px 8px;line-height:1}
 
-.pt{display:flex;flex-direction:column;padding-top:calc(10px + env(safe-area-inset-top))}
-.pt-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px}
-.pt-top-title{font-size:1.25rem;font-weight:700;color:#fff;margin:0;line-height:1.2;opacity:1;transition:opacity .35s ease}
-.pt-stage{position:relative;width:100%;margin-top:8px}
-.pt-hero{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:7vh;transition:padding-top 1.1s cubic-bezier(.22,1,.36,1)}
-.pt-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;transition:gap 1.1s cubic-bezier(.22,1,.36,1)}
-.plogo{width:min(44vw,180px);height:auto;transform:translateX(6%);flex-shrink:0;transition:width 1.1s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1)}
-.pt-name-wrap{display:flex;flex-direction:column;align-items:center;min-width:0;transition:align-items 1.1s cubic-bezier(.22,1,.36,1)}
-.pt-sub-label{font-size:.9rem;font-weight:600;color:var(--mut);line-height:1.15;max-height:0;opacity:0;margin:0;overflow:hidden;transition:max-height .55s ease,opacity .45s ease,margin .55s ease}
-.pt .wl{display:block;color:#d1d5db;font-size:1.1rem;font-weight:600;opacity:1;max-height:2em;margin-bottom:4px;overflow:hidden;transition:opacity .45s ease,max-height .55s ease,margin .55s ease}
-.pt h1.nm{color:#fff;font-weight:700;font-size:1.85rem;margin:0;line-height:1.18;transition:font-size 1.1s cubic-bezier(.22,1,.36,1)}
-.pt .note{margin-top:14px;max-height:3em;opacity:1;overflow:hidden;transition:opacity .4s ease,max-height .45s ease,margin .45s ease}
+.pt{position:relative;min-height:calc(100dvh - 110px);padding-top:calc(8px + env(safe-area-inset-top))}
+.pt-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:flex-end;width:100%;padding:6px 0;background:var(--bg)}
+.pt-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:58dvh;width:100%;transition:min-height .85s cubic-bezier(.22,1,.36,1),padding-top .85s cubic-bezier(.22,1,.36,1)}
+.pt-brand-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;transition:gap .85s cubic-bezier(.22,1,.36,1)}
+.plogo{width:128px;height:128px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block;will-change:width,height;transition:width .85s cubic-bezier(.22,1,.36,1),height .85s cubic-bezier(.22,1,.36,1)}
+.pt-name-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;max-width:100%;transition:align-items .85s cubic-bezier(.22,1,.36,1)}
+.pt-sub-label{font-size:.95rem;font-weight:500;color:#e5e7eb;line-height:1.2;white-space:nowrap;opacity:0;max-height:0;overflow:hidden;will-change:opacity,max-height;transition:opacity .55s ease,max-height .55s ease,margin .55s ease}
+.pt .wl{display:block;color:#d1d5db;font-size:1.15rem;font-weight:600;margin-top:4px;white-space:nowrap;opacity:1;max-height:2em;overflow:hidden;will-change:opacity,max-height;transition:opacity .45s ease,max-height .45s ease,margin .45s ease}
+.pt h1.nm{color:#fff;font-weight:700;font-size:clamp(1.2rem,5.2vw,1.85rem);margin:4px 0 0;line-height:1.2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;will-change:font-size;transition:font-size .85s cubic-bezier(.22,1,.36,1),margin .85s cubic-bezier(.22,1,.36,1)}
+.pt .note{margin-top:12px;text-align:center;transition:opacity .4s ease}
 
-.pt.settled .pt-top-title{opacity:0;flex:0 0 0;width:0;min-width:0;overflow:hidden;pointer-events:none}
-.pt.settled .pt-hero{padding-top:0;align-items:flex-start;text-align:left}
-.pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px}
-.pt.settled .plogo{width:52px;transform:translateX(0)}
+.pt.settled .pt-hero{min-height:0;padding-top:0;align-items:flex-start;text-align:left;margin-top:-44px}
+.pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;padding-right:104px}
+.pt.settled .plogo{width:54px;height:54px}
 .pt.settled .pt-name-wrap{align-items:flex-start}
-.pt.settled .pt-sub-label{max-height:1.5em;opacity:1;margin-bottom:2px}
+.pt.settled .pt-sub-label{opacity:1;max-height:1.5em;margin-bottom:2px}
 .pt.settled .wl{opacity:0;max-height:0;margin:0;pointer-events:none}
-.pt.settled h1.nm{font-size:1.45rem}
-.pt.settled .note{opacity:0;max-height:0;margin:0;pointer-events:none}
+.pt.settled h1.nm{font-size:clamp(1.05rem,4.2vw,1.35rem);margin:0}
+.pt.settled .note{opacity:0;pointer-events:none}
 
 .nm{color:#ffffff;font-weight:700}
 .sec{color:var(--mut);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px}
@@ -136,7 +133,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:42px;background-ima
 @media (prefers-reduced-motion:reduce){
   #splash img.go{animation:none!important;opacity:1!important;transform:none!important}
   #splash{transition:none!important}
-  .pt-top-title,.pt-hero,.pt-brand-row,.plogo,.pt-name-wrap,.pt-sub-label,.pt .wl,.pt h1.nm,.pt .note{transition:none!important}
+  .pt-hero,.pt-brand-row,.plogo,.pt-name-wrap,.pt-sub-label,.pt .wl,.pt h1.nm,.pt .note{transition:none!important}
 }
 </style>
 </head>
@@ -355,7 +352,7 @@ function activateView() {
   };
 }
 
-let treeRoot = null, regPre = null, faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "", portalSettled = false;
+let treeRoot = null, regPre = null, faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "", portalSettled = false, portalTimer = null;
 const NAV = [["portal", "Home"], ["shop", "Shop"], ["wallet", "Wallet"], ["profile", "Profile"]];
 const MENU = [["shield", "Founder Administration", "fa", 1], ["grid", "Dashboard", "dash"],
   ["share", "Genealogy", "tree"], ["userplus", "New Member Registration", "newreg"], ["cart", "My Purchases / Orders", "orders"],
@@ -371,6 +368,7 @@ const PAGES = {portal: {t: "Member Portal", f: portal}, menu: {t: "Member Menu",
 function go(p, push = true) { if (push && page !== p) hist.push(page); page = p; render(); window.scrollTo(0, 0); }
 function faTitle() { let l = FA, t = "Founder Administration"; for (const i of faPath) { t = l[i][0]; l = l[i][1]; } return t; }
 function render() {
+  clearTimeout(portalTimer);
   const P = PAGES[page], T = page === "fa" ? faTitle() : page === "soon" ? soonT : P.t;
   const topBar = page === "portal" ? "" : `<div class="tb"><button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b></div>`;
   app.innerHTML = `${topBar}
@@ -383,30 +381,27 @@ function render() {
 async function portal() {
   $("#v").innerHTML = `<div class="pt${portalSettled ? " settled" : ""}" id="ptBox">
     <div class="pt-top">
-      <div class="pt-top-title">Member Portal</div>
-      <button class="menu" id="mn">☰ Menu</button>
+      <button class="menu" id="mn" aria-label="Menu"><span>☰</span><span>Menu</span></button>
     </div>
-    <div class="pt-stage">
-      <div class="pt-hero">
-        <div class="pt-brand-row">
-          <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
-          <div class="pt-name-wrap">
-            <span class="pt-sub-label">Member Portal</span>
-            <span class="wl">Welcome</span>
-            <h1 class="nm">${esc(me.full_name || "Member")}</h1>
-          </div>
+    <div class="pt-hero">
+      <div class="pt-brand-row">
+        <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
+        <div class="pt-name-wrap">
+          <span class="pt-sub-label">Member Portal</span>
+          <span class="wl">Welcome</span>
+          <h1 class="nm">${esc(me.full_name || "Member")}</h1>
         </div>
-        ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
       </div>
+      ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
     </div>
   </div>`;
-  $("#mn").onclick = () => go("menu");
+  $("#mn").onclick = () => { portalSettled = true; go("menu"); };
   if (!portalSettled) {
-    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(() => {
+    portalTimer = setTimeout(() => {
       const box = $("#ptBox");
       if (box) box.classList.add("settled");
       portalSettled = true;
-    }, 1000)));
+    }, 1100);
   }
 }
 const ICO = {
