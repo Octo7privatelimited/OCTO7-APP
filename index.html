@@ -64,17 +64,21 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .wel .ft{color:#c9d3f5;font-size:.85rem;letter-spacing:.05em}
 .tb{display:flex;align-items:center;gap:12px;background:var(--bg);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 14px;font-size:1.5rem;position:sticky;top:0;z-index:5}
 .tb b{flex:1;font-weight:700;color:#fff;letter-spacing:.01em}
-.menu{background:#fff;color:#17171b;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700}
+.menu{background:#fff;color:#17171b;border:0;border-radius:24px;padding:12px 18px;font:inherit;font-weight:700;flex-shrink:0}
 .bk{background:none;border:0;color:#fff;font-size:2rem;padding:2px 8px;line-height:1}
 .mi{display:flex;align-items:center;gap:18px;width:100%;padding:15px 8px;background:none;border:0;color:var(--ink);font:inherit;font-size:1.1rem;text-align:left;letter-spacing:.02em}
 .mi span{width:32px;text-align:center;font-size:1.4rem}
 
-/* Portal combined side-by-side move to just below Member Portal */
-.pt{min-height:66vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding-top:14vh}
-.pt-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;transform:translateY(0);transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
-.pt.settled .pt-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;transform:translateY(-13.5vh)}
+/* Portal layout: Member Portal + logo/name left-aligned, Menu vertically centered across Member Portal top to logo bottom */
+.pt{min-height:66vh;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;text-align:left;padding-top:14vh}
+.pt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;transform:translateY(0);transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
+.pt.settled .pt-head{transform:translateY(-14.5vh)}
+.pt-left{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
+.pt-top-title{font-size:1.5rem;font-weight:700;color:#fff;line-height:1.15;margin:0}
+.pt-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;transition:gap 1.3s cubic-bezier(.22,1,.36,1)}
+.pt.settled .pt-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:6px}
 .plogo{width:min(46vw,190px);margin-bottom:8px;transform:translateX(6%);transition:width 1.3s cubic-bezier(.22,1,.36,1),margin 1.3s cubic-bezier(.22,1,.36,1),transform 1.3s cubic-bezier(.22,1,.36,1)}
-.pt.settled .plogo{width:50px;margin-bottom:0;transform:translateX(3%);flex-shrink:0}
+.pt.settled .plogo{width:50px;margin-bottom:0;transform:translateX(0);flex-shrink:0}
 .pt .wl{display:block;color:#d1d5db;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .7s ease,max-height .8s ease,margin .8s ease}
 .pt.settled .wl{opacity:0;max-height:0;margin:0;overflow:hidden;pointer-events:none}
 .pt .nm{color:#fff;font-weight:700;transition:font-size 1.3s cubic-bezier(.22,1,.36,1),margin 1.3s cubic-bezier(.22,1,.36,1),text-align 1.3s cubic-bezier(.22,1,.36,1)}
@@ -155,7 +159,7 @@ textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;b
 @media (prefers-reduced-motion:reduce){
   .enter,#splash img.go{animation:none!important;opacity:1!important;transform:none!important}
   #splash{transition:none!important}
-  .pt-row,.plogo,.pt .wl,.pt .nm{transition:none!important}
+  .pt-head,.pt-row,.plogo,.pt .wl,.pt .nm{transition:none!important}
 }
 </style>
 </head>
@@ -392,16 +396,29 @@ function go(p, push = true) { if (push && page !== p) hist.push(page); page = p;
 function faTitle() { let l = FA, t = "Founder Administration"; for (const i of faPath) { t = l[i][0]; l = l[i][1]; } return t; }
 function render() {
   const P = PAGES[page], T = page === "fa" ? faTitle() : page === "soon" ? soonT : P.t;
-  app.innerHTML = `<div class="tb">${page === "portal" ? '<b>Member Portal</b><button class="menu" id="mn">☰ Menu</button>' : `<button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b>`}</div>
+  const topBar = page === "portal" ? "" : `<div class="tb"><button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b></div>`;
+  app.innerHTML = `${topBar}
   <main id="v"><p class="mut">Loading…</p></main>
   <nav>${NAV.map(([k, l]) => `<button data-p="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("")}</nav>`;
-  if ($("#mn")) $("#mn").onclick = () => go("menu");
   if ($("#bk")) $("#bk").onclick = () => { if (page === "fa" && faPath.length) { faPath.pop(); render(); } else go(hist.pop() || "portal", false); };
   app.querySelectorAll("nav button").forEach(b => b.onclick = () => { hist = b.dataset.p === "portal" ? [] : ["portal"]; go(b.dataset.p, false); });
   Promise.resolve().then(() => P.f()).catch(() => {});
 }
 async function portal() {
-  $("#v").innerHTML = `<div class="pt" id="ptBox"><div class="pt-row"><img class="plogo" src="globe.webp" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span>${esc(me.full_name || "Member")}</h1></div>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+  $("#v").innerHTML = `<div class="pt" id="ptBox">
+    <div class="pt-head">
+      <div class="pt-left">
+        <div class="pt-top-title">Member Portal</div>
+        <div class="pt-row">
+          <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
+          <h1 class="nm"><span class="wl">Welcome</span>${esc(me.full_name || "Member")}</h1>
+        </div>
+      </div>
+      <button class="menu" id="mn">☰ Menu</button>
+    </div>
+    ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
+  </div>`;
+  $("#mn").onclick = () => go("menu");
   requestAnimationFrame(() => {
     setTimeout(() => {
       const box = $("#ptBox");
