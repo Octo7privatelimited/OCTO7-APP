@@ -60,18 +60,17 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt-hero{position:relative;width:100%;height:100%;min-height:calc(100dvh - 156px);display:flex;flex-direction:column;align-items:center;text-align:center}
 .pt-brand-row{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:0;width:100%;height:100%;min-height:calc(100dvh - 156px)}
 .pt-left{position:relative;width:100%;height:100%;min-height:calc(100dvh - 156px);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.plogo{position:relative;z-index:2;width:min(44vw,180px);height:auto;max-height:none;object-fit:contain;border-radius:0;overflow:visible;transform:translate3d(6%,0,0);transform-origin:top left;will-change:transform}
-.pt-name-wrap{position:absolute;top:calc(50% + min(22vw,90px) + 4px);left:0;right:0;display:flex;flex-direction:column;align-items:center;transform:translate3d(0,0,0);transform-origin:top left;will-change:transform}
-.pt .wl{display:block;color:#e5e7eb;font-size:1.15rem;font-weight:600;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .75s ease}
+.plogo{position:relative;z-index:2;width:min(44vw,180px);height:auto;max-height:none;object-fit:contain;border-radius:0;overflow:visible;transform:translate3d(0,0,0);transform-origin:top left;will-change:transform}
+.pt-name-wrap{position:relative;margin-top:4px;display:flex;flex-direction:column;align-items:center;transform:translate3d(0,0,0);transform-origin:top left;will-change:transform}
+.pt .wl{display:block;color:#e5e7eb;font-size:1.15rem;font-weight:600;opacity:1;margin-bottom:4px;transition:opacity .95s ease-out}
 .pt .pt-sub{display:none;color:#d1d5db;font-size:.98rem;font-weight:500;line-height:1.25;margin-bottom:2px}
 .pt h1.nm{color:#fff;font-weight:700;font-size:1.85rem;margin:0;line-height:1.18}
-.pt .menu{opacity:0;pointer-events:none;transition:opacity .55s ease .45s}
-.pt .note{position:absolute;bottom:16px;left:0;right:0;margin:0;transition:opacity .65s ease}
+.pt .menu{opacity:0;pointer-events:none;transition:opacity .65s ease .45s}
+.pt .note{position:absolute;bottom:16px;left:0;right:0;margin:0;transition:opacity .75s ease-out}
 
 .pt.fading .wl,.pt.fading .note{opacity:0}
-.pt.hiding-wl .wl{display:none}
 
-.pt.animating .plogo,.pt.animating .pt-name-wrap{transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+.pt.animating .plogo,.pt.animating .pt-name-wrap{transition:transform 1.05s cubic-bezier(.22,1,.36,1)}
 
 .pt.settled{min-height:0}
 .pt.settled .pt-stage{flex:0 0 auto;height:auto;min-height:0}
@@ -79,7 +78,7 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;height:auto;min-height:0}
 .pt.settled .pt-left{flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;width:auto;height:auto;min-height:0;min-width:0;flex:1}
 .pt.settled .plogo{width:56px;height:auto;max-height:56px;object-fit:contain;border-radius:0;transform:none;flex-shrink:0;transition:none}
-.pt.settled .pt-name-wrap{position:static;top:auto;left:auto;right:auto;align-items:flex-start;min-width:0;transform:none;transition:none}
+.pt.settled .pt-name-wrap{position:static;margin-top:0;align-items:flex-start;min-width:0;transform:none;transition:none}
 .pt.settled .wl{display:none}
 .pt.settled .pt-sub{display:block}
 .pt.settled h1.nm{font-size:1.28rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -424,38 +423,47 @@ async function portal() {
       const targetFontSize = h1 ? parseFloat(getComputedStyle(h1).fontSize) : 20.48;
       box.classList.remove("settled");
 
-      box.classList.add("fading");
+      let dLogoX = 0, dLogoY = 0, sx = 1, sy = 1;
+      let dWrapX = 0, dWrapY = 0, sc = 1;
 
       if (logo && rLogo && tLogo && tLogo.width > 0) {
-        const sx = rLogo.width / tLogo.width;
-        const sy = rLogo.height / tLogo.height;
-        logo.style.transform = `translate3d(${rLogo.left - tLogo.left}px, ${rLogo.top - tLogo.top}px, 0) scale(${sx}, ${sy})`;
+        sx = rLogo.width / tLogo.width;
+        sy = rLogo.height / tLogo.height;
+        dLogoX = rLogo.left - tLogo.left;
+        dLogoY = rLogo.top - tLogo.top;
+        logo.style.transition = "none";
+        logo.style.transform = `translate3d(${dLogoX}px, ${dLogoY}px, 0) scale(${sx}, ${sy})`;
       }
       if (wrap && rH1 && tWrap && tH1 && tH1.height > 0) {
-        const sc = curFontSize / targetFontSize;
+        sc = curFontSize / targetFontSize;
         const h1OffsetX = (tH1.left - tWrap.left) * sc;
         const h1OffsetY = (tH1.top - tWrap.top) * sc;
         const startWrapLeft = (rH1.left + rH1.width / 2) - (tH1.width * sc) / 2 - h1OffsetX;
         const startWrapTop = rH1.top - h1OffsetY;
-        wrap.style.transform = `translate3d(${startWrapLeft - tWrap.left}px, ${startWrapTop - tWrap.top}px, 0) scale(${sc})`;
+        dWrapX = startWrapLeft - tWrap.left;
+        dWrapY = startWrapTop - tWrap.top;
+        wrap.style.transition = "none";
+        wrap.style.transform = `translate3d(${dWrapX}px, ${dWrapY}px, 0) scale(${sc})`;
       }
 
       box.offsetHeight;
 
       requestAnimationFrame(() => {
         if (!box || portalSettled) return;
-        box.classList.add("animating");
+        if (logo) logo.style.transition = "";
+        if (wrap) wrap.style.transition = "";
+        box.classList.add("fading", "animating");
         if (logo) logo.style.transform = "translate3d(0, 0, 0) scale(1)";
         if (wrap) wrap.style.transform = "translate3d(0, 0, 0) scale(1)";
 
         setTimeout(() => {
           if (!box) return;
-          box.classList.add("hiding-wl", "settled");
-          box.classList.remove("animating", "fading", "hiding-wl");
-          if (logo) logo.style.transform = "";
-          if (wrap) wrap.style.transform = "";
+          box.classList.add("settled");
+          box.classList.remove("animating", "fading");
+          if (logo) { logo.style.transform = ""; logo.style.transition = ""; }
+          if (wrap) { wrap.style.transform = ""; wrap.style.transition = ""; }
           portalSettled = true;
-        }, 1120);
+        }, 1080);
       });
     }, 650);
   }
