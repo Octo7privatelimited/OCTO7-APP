@@ -68,11 +68,23 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .bk{background:none;border:0;color:#fff;font-size:2rem;padding:2px 8px;line-height:1}
 .mi{display:flex;align-items:center;gap:18px;width:100%;padding:15px 8px;background:none;border:0;color:var(--ink);font:inherit;font-size:1.1rem;text-align:left;letter-spacing:.02em}
 .mi span{width:32px;text-align:center;font-size:1.4rem}
-.pt{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.plogo{width:min(46vw,190px);margin-bottom:18px;transform:translateX(6%)}
+
+/* Portal combined side-by-side move to just below Member Portal */
+.pt{min-height:66vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding-top:14vh}
+.pt-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;transform:translateY(0);transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
+.pt.settled .pt-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;transform:translateY(-13.5vh)}
+.plogo{width:min(46vw,190px);margin-bottom:8px;transform:translateX(6%);transition:width 1.3s cubic-bezier(.22,1,.36,1),margin 1.3s cubic-bezier(.22,1,.36,1),transform 1.3s cubic-bezier(.22,1,.36,1)}
+.pt.settled .plogo{width:50px;margin-bottom:0;transform:translateX(3%);flex-shrink:0}
+.pt .wl{display:block;color:#d1d5db;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .7s ease,max-height .8s ease,margin .8s ease}
+.pt.settled .wl{opacity:0;max-height:0;margin:0;overflow:hidden;pointer-events:none}
+.pt .nm{color:#fff;font-weight:700;transition:font-size 1.3s cubic-bezier(.22,1,.36,1),margin 1.3s cubic-bezier(.22,1,.36,1),text-align 1.3s cubic-bezier(.22,1,.36,1)}
+h1.nm{font-size:1.9rem;margin:6px 0}
+.pt.settled h1.nm{font-size:1.2rem;margin:0;text-align:left;line-height:1.2}
+.pt .note{transition:opacity .7s ease}
+.pt.settled .note{opacity:0;pointer-events:none}
+
 .nm{color:#ffffff;font-weight:700}
 .id{color:#ffffff}
-h1.nm{font-size:1.9rem;margin:6px 0}
 .f{display:block}.f b{display:block;font-size:1.05rem;margin-top:2px;word-break:break-word}
 .sec{color:var(--mut);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px}
 .ctr{text-align:center}
@@ -143,6 +155,7 @@ textarea{display:block;width:100%;margin-top:4px;padding:12px;min-height:130px;b
 @media (prefers-reduced-motion:reduce){
   .enter,#splash img.go{animation:none!important;opacity:1!important;transform:none!important}
   #splash{transition:none!important}
+  .pt-row,.plogo,.pt .wl,.pt .nm{transition:none!important}
 }
 </style>
 </head>
@@ -388,7 +401,13 @@ function render() {
   Promise.resolve().then(() => P.f()).catch(() => {});
 }
 async function portal() {
-  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="globe.webp" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+  $("#v").innerHTML = `<div class="pt" id="ptBox"><div class="pt-row"><img class="plogo" src="globe.webp" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span>${esc(me.full_name || "Member")}</h1></div>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const box = $("#ptBox");
+      if (box) box.classList.add("settled");
+    }, 1000);
+  });
 }
 const ICO = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
