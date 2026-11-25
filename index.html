@@ -57,14 +57,14 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 
 .pt{position:relative;min-height:calc(100dvh - 110px);padding-top:calc(8px + env(safe-area-inset-top))}
 .pt-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:flex-end;width:100%;padding:6px 0;background:var(--bg)}
-.pt-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:58dvh;width:100%;transition:min-height .85s cubic-bezier(.22,1,.36,1),padding-top .85s cubic-bezier(.22,1,.36,1)}
-.pt-brand-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;transition:gap .85s cubic-bezier(.22,1,.36,1)}
-.plogo{width:128px;height:128px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block;will-change:width,height;transition:width .85s cubic-bezier(.22,1,.36,1),height .85s cubic-bezier(.22,1,.36,1)}
-.pt-name-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;max-width:100%;transition:align-items .85s cubic-bezier(.22,1,.36,1)}
-.pt-sub-label{font-size:.95rem;font-weight:500;color:#e5e7eb;line-height:1.2;white-space:nowrap;opacity:0;max-height:0;overflow:hidden;will-change:opacity,max-height;transition:opacity .55s ease,max-height .55s ease,margin .55s ease}
-.pt .wl{display:block;color:#d1d5db;font-size:1.15rem;font-weight:600;margin-top:4px;white-space:nowrap;opacity:1;max-height:2em;overflow:hidden;will-change:opacity,max-height;transition:opacity .45s ease,max-height .45s ease,margin .45s ease}
-.pt h1.nm{color:#fff;font-weight:700;font-size:clamp(1.2rem,5.2vw,1.85rem);margin:4px 0 0;line-height:1.2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;will-change:font-size;transition:font-size .85s cubic-bezier(.22,1,.36,1),margin .85s cubic-bezier(.22,1,.36,1)}
-.pt .note{margin-top:12px;text-align:center;transition:opacity .4s ease}
+.pt-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:58dvh;width:100%}
+.pt-brand-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%}
+.plogo{width:128px;height:128px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block;transform-origin:top left;will-change:transform}
+.pt-name-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;max-width:100%;transform-origin:top left;will-change:transform}
+.pt-sub-label{font-size:.95rem;font-weight:500;color:#e5e7eb;line-height:1.2;white-space:nowrap;opacity:0;max-height:0;overflow:hidden;transition:opacity .35s ease,max-height .35s ease,margin .35s ease}
+.pt .wl{display:block;color:#d1d5db;font-size:1.15rem;font-weight:600;margin-top:4px;white-space:nowrap;opacity:1;max-height:2em;overflow:hidden;transition:opacity .3s ease,max-height .3s ease,margin .3s ease}
+.pt h1.nm{color:#fff;font-weight:700;font-size:clamp(1.2rem,5.2vw,1.85rem);margin:4px 0 0;line-height:1.2;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.pt .note{margin-top:12px;text-align:center;transition:opacity .3s ease}
 
 .pt.settled .pt-hero{min-height:0;padding-top:0;align-items:flex-start;text-align:left;margin-top:-44px}
 .pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;padding-right:104px}
@@ -133,7 +133,7 @@ select{-webkit-appearance:none;appearance:none;padding-right:42px;background-ima
 @media (prefers-reduced-motion:reduce){
   #splash img.go{animation:none!important;opacity:1!important;transform:none!important}
   #splash{transition:none!important}
-  .pt-hero,.pt-brand-row,.plogo,.pt-name-wrap,.pt-sub-label,.pt .wl,.pt h1.nm,.pt .note{transition:none!important}
+  .plogo,.pt-name-wrap,.pt-sub-label,.pt .wl,.pt .note{transition:none!important}
 }
 </style>
 </head>
@@ -163,6 +163,7 @@ const day = d => new Date(d).toLocaleDateString("en-IN", {day: "numeric", month:
 const STATUS = {placed: "Placed", paid: "Paid", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled", returned: "Returned"};
 const KIND = {binary_commission: "Binary income", sponsor_bonus: "Sponsor bonus", withdrawal: "Withdrawal", withdrawal_refund: "Withdrawal refund"};
 let me = null, cfg = {}, cart = {};
+let treeRoot = null, regPre = null, faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "", portalSettled = false, portalTimer = null, portalRaf = null;
 
 function toast(msg, bad) {
   const t = $("#toast");
@@ -352,7 +353,6 @@ function activateView() {
   };
 }
 
-let treeRoot = null, regPre = null, faPath = [], page = "portal", hist = [], isAdmin = false, authUser = null, soonT = "", portalSettled = false, portalTimer = null;
 const NAV = [["portal", "Home"], ["shop", "Shop"], ["wallet", "Wallet"], ["profile", "Profile"]];
 const MENU = [["shield", "Founder Administration", "fa", 1], ["grid", "Dashboard", "dash"],
   ["share", "Genealogy", "tree"], ["userplus", "New Member Registration", "newreg"], ["cart", "My Purchases / Orders", "orders"],
@@ -369,6 +369,7 @@ function go(p, push = true) { if (push && page !== p) hist.push(page); page = p;
 function faTitle() { let l = FA, t = "Founder Administration"; for (const i of faPath) { t = l[i][0]; l = l[i][1]; } return t; }
 function render() {
   clearTimeout(portalTimer);
+  cancelAnimationFrame(portalRaf);
   const P = PAGES[page], T = page === "fa" ? faTitle() : page === "soon" ? soonT : P.t;
   const topBar = page === "portal" ? "" : `<div class="tb"><button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b></div>`;
   app.innerHTML = `${topBar}
@@ -398,9 +399,39 @@ async function portal() {
   $("#mn").onclick = () => { portalSettled = true; go("menu"); };
   if (!portalSettled) {
     portalTimer = setTimeout(() => {
-      const box = $("#ptBox");
-      if (box) box.classList.add("settled");
+      const box = $("#ptBox"), logo = $(".plogo", box), nw = $(".pt-name-wrap", box);
+      if (!box) return;
+      const rLogo0 = logo ? logo.getBoundingClientRect() : null;
+      const rNw0 = nw ? nw.getBoundingClientRect() : null;
+
+      box.classList.add("settled");
       portalSettled = true;
+
+      const rLogo1 = logo ? logo.getBoundingClientRect() : null;
+      const rNw1 = nw ? nw.getBoundingClientRect() : null;
+
+      if (logo && rLogo0 && rLogo1 && rLogo1.width && rLogo1.height) {
+        const dx = rLogo0.left - rLogo1.left;
+        const dy = rLogo0.top - rLogo1.top;
+        const sx = rLogo0.width / rLogo1.width;
+        const sy = rLogo0.height / rLogo1.height;
+        logo.style.transition = "none";
+        logo.style.transform = `translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`;
+      }
+      if (nw && rNw0 && rNw1) {
+        const dx = rNw0.left - rNw1.left;
+        const dy = rNw0.top - rNw1.top;
+        nw.style.transition = "none";
+        nw.style.transform = `translate3d(${dx}px,${dy}px,0)`;
+      }
+
+      portalRaf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const ease = "transform .85s cubic-bezier(.22,1,.36,1)";
+          if (logo) { logo.style.transition = ease; logo.style.transform = "translate3d(0,0,0) scale(1,1)"; }
+          if (nw) { nw.style.transition = ease; nw.style.transform = "translate3d(0,0,0)"; }
+        });
+      });
     }, 1100);
   }
 }
