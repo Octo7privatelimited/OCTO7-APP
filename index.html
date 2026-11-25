@@ -55,7 +55,6 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .menu{background:#fff;color:#17171b;border:0;border-radius:999px;padding:10px 18px;font:inherit;font-size:.95rem;font-weight:700;flex-shrink:0;line-height:1.1}
 .bk{background:none;border:0;color:#fff;font-size:2rem;padding:2px 8px;line-height:1}
 
-/* Portal Header & Animation */
 .pt{display:flex;flex-direction:column;padding-top:calc(12px + env(safe-area-inset-top))}
 .pt-stage{position:relative;width:100%;min-height:46vh;transition:min-height .8s cubic-bezier(.22,1,.36,1)}
 .pt-hero{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:7vh;transform:translateY(0);transition:transform 1.25s cubic-bezier(.22,1,.36,1),padding-top 1.25s cubic-bezier(.22,1,.36,1)}
@@ -69,7 +68,6 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt .menu{opacity:0;pointer-events:none;transition:opacity .45s ease .35s}
 .pt .note{margin-top:14px;transition:opacity .55s ease}
 
-/* Settled State matching reference image */
 .pt.settled .pt-stage{min-height:0}
 .pt.settled .pt-hero{padding-top:4px;align-items:stretch;text-align:left}
 .pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
@@ -397,7 +395,7 @@ async function portal() {
               <h1 class="nm">${esc(me.full_name || "Member")}</h1>
             </div>
           </div>
-          <button class="menu" id="mn">☰ Menu</button>
+          <button class="menu" id="mn">&#9776; Menu</button>
         </div>
         ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
       </div>
