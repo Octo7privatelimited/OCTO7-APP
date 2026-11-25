@@ -60,9 +60,9 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt-hero{position:relative;width:100%;height:100%;min-height:calc(100dvh - 156px);display:flex;flex-direction:column;align-items:center;text-align:center}
 .pt-brand-row{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:0;width:100%;height:100%;min-height:calc(100dvh - 156px)}
 .pt-left{position:relative;width:100%;height:100%;min-height:calc(100dvh - 156px);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.plogo{position:relative;z-index:2;width:min(44vw,180px);height:auto;max-height:none;object-fit:contain;border-radius:0;overflow:visible;transform:translate3d(6%,0,0);transform-origin:left center;will-change:transform}
-.pt-name-wrap{position:absolute;top:calc(50% + min(22vw,90px) + 14px);left:0;right:0;display:flex;flex-direction:column;align-items:center;transform:translate3d(0,0,0);transform-origin:left center;will-change:transform}
-.pt .wl{display:block;color:#e5e7eb;font-size:1.15rem;font-weight:600;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .45s ease,max-height .5s ease,margin .5s ease}
+.plogo{position:relative;z-index:2;width:min(44vw,180px);height:auto;max-height:none;object-fit:contain;border-radius:0;overflow:visible;transform:translate3d(6%,0,0);transform-origin:top left;will-change:transform}
+.pt-name-wrap{position:absolute;top:calc(50% + min(22vw,90px) + 4px);left:0;right:0;display:flex;flex-direction:column;align-items:center;transform:translate3d(0,0,0);transform-origin:top left;will-change:transform}
+.pt .wl{display:block;color:#e5e7eb;font-size:1.15rem;font-weight:600;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .45s ease}
 .pt .pt-sub{display:none;color:#d1d5db;font-size:.98rem;font-weight:500;line-height:1.25;margin-bottom:2px}
 .pt h1.nm{color:#fff;font-weight:700;font-size:1.85rem;margin:0;line-height:1.18}
 .pt .menu{opacity:0;pointer-events:none;transition:opacity .45s ease .35s}
@@ -71,8 +71,6 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt.fading .wl,.pt.fading .note{opacity:0}
 
 .pt.animating .plogo,.pt.animating .pt-name-wrap{transition:transform 1.15s cubic-bezier(.22,1,.36,1)}
-.pt.animating .pt-sub{display:block}
-.pt.animating h1.nm{font-size:1.28rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .pt.settled{min-height:0}
 .pt.settled .pt-stage{flex:0 0 auto;height:auto;min-height:0}
@@ -410,11 +408,10 @@ async function portal() {
   </div>`;
   $("#mn").onclick = () => go("menu");
   if (!portalSettled) {
-    const box = $("#ptBox"), logo = $(".plogo", box), wrap = $(".pt-name-wrap", box), h1 = $("h1.nm", box), sub = $(".pt-sub", box);
+    const box = $("#ptBox"), logo = $(".plogo", box), wrap = $(".pt-name-wrap", box), h1 = $("h1.nm", box);
     setTimeout(() => {
       if (!box || portalSettled) return;
       const rLogo = logo ? logo.getBoundingClientRect() : null;
-      const rWrap = wrap ? wrap.getBoundingClientRect() : null;
       const rH1 = h1 ? h1.getBoundingClientRect() : null;
       const curFontSize = h1 ? parseFloat(getComputedStyle(h1).fontSize) : 29.6;
 
@@ -422,55 +419,42 @@ async function portal() {
 
       setTimeout(() => {
         if (!box || portalSettled) return;
-        if (sub) sub.style.display = "block";
-        if (h1) {
-          h1.style.fontSize = "1.28rem";
-          h1.style.lineHeight = "1.2";
-          h1.style.whiteSpace = "nowrap";
-          h1.style.overflow = "hidden";
-          h1.style.textOverflow = "ellipsis";
-        }
+
         box.classList.add("settled");
         const tLogo = logo ? logo.getBoundingClientRect() : null;
         const tWrap = wrap ? wrap.getBoundingClientRect() : null;
         const tH1 = h1 ? h1.getBoundingClientRect() : null;
         const targetFontSize = h1 ? parseFloat(getComputedStyle(h1).fontSize) : 20.48;
-        box.classList.remove("settled");
-        if (sub) sub.style.display = "";
-        if (h1) {
-          h1.style.fontSize = "";
-          h1.style.lineHeight = "";
-          h1.style.whiteSpace = "";
-          h1.style.overflow = "";
-          h1.style.textOverflow = "";
-        }
 
         if (logo && rLogo && tLogo && tLogo.width > 0) {
-          const sx = tLogo.width / rLogo.width;
-          const sy = tLogo.height / rLogo.height;
-          logo.style.transform = `translate3d(${tLogo.left - rLogo.left}px, ${tLogo.top - rLogo.top}px, 0) scale(${sx}, ${sy})`;
+          const sx = rLogo.width / tLogo.width;
+          const sy = rLogo.height / tLogo.height;
+          logo.style.transform = `translate3d(${rLogo.left - tLogo.left}px, ${rLogo.top - tLogo.top}px, 0) scale(${sx}, ${sy})`;
         }
-        if (wrap && rWrap && tWrap) {
-          const dx = tWrap.left - rWrap.left;
-          const dy = tWrap.top - rWrap.top;
-          const sc = (rH1 && tH1 && rH1.height > 0) ? (targetFontSize / curFontSize) : 1;
-          wrap.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${sc})`;
+        if (wrap && rH1 && tWrap && tH1 && tH1.height > 0) {
+          const sc = curFontSize / targetFontSize;
+          const h1OffsetX = (tH1.left - tWrap.left) * sc;
+          const h1OffsetY = (tH1.top - tWrap.top) * sc;
+          const startWrapLeft = (rH1.left + rH1.width / 2) - (tH1.width * sc) / 2 - h1OffsetX;
+          const startWrapTop = rH1.top - h1OffsetY;
+          wrap.style.transform = `translate3d(${startWrapLeft - tWrap.left}px, ${startWrapTop - tWrap.top}px, 0) scale(${sc})`;
         }
 
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+        box.offsetHeight;
+
+        requestAnimationFrame(() => {
           if (!box || portalSettled) return;
           box.classList.add("animating");
           if (logo) logo.style.transform = "translate3d(0, 0, 0) scale(1)";
           if (wrap) wrap.style.transform = "translate3d(0, 0, 0) scale(1)";
           setTimeout(() => {
             if (!box) return;
-            box.classList.remove("animating");
+            box.classList.remove("animating", "fading");
             if (logo) logo.style.transform = "";
             if (wrap) wrap.style.transform = "";
-            box.classList.add("settled");
             portalSettled = true;
           }, 1180);
-        }));
+        });
       }, 450);
     }, 650);
   }
