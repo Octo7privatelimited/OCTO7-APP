@@ -57,23 +57,27 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 
 .pt{min-height:66vh;display:flex;flex-direction:column;padding-top:calc(10px + env(safe-area-inset-top))}
 .pt-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
-.pt-title{font-size:.95rem;font-weight:600;color:var(--mut);margin:0;line-height:1.2}
-.pt-stage{position:relative;flex:1;width:100%;min-height:46vh;margin-top:12px}
+.pt-top-title{font-size:1.25rem;font-weight:700;color:#fff;margin:0;line-height:1.2;opacity:1;transition:opacity .4s ease}
+.pt-stage{position:relative;flex:1;width:100%;min-height:46vh;margin-top:8px}
 .pt-hero{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:7vh;transform:translateY(0);transition:transform 1.25s cubic-bezier(.22,1,.36,1),padding-top 1.25s cubic-bezier(.22,1,.36,1)}
-.pt-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;transition:flex-direction .01s,align-items 1.25s cubic-bezier(.22,1,.36,1),gap 1.25s cubic-bezier(.22,1,.36,1)}
+.pt-brand-row{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;transition:align-items 1.25s cubic-bezier(.22,1,.36,1),gap 1.25s cubic-bezier(.22,1,.36,1)}
 .plogo{width:min(44vw,180px);height:auto;transform:translateX(6%);transition:width 1.25s cubic-bezier(.22,1,.36,1),transform 1.25s cubic-bezier(.22,1,.36,1)}
 .pt-name-wrap{display:flex;flex-direction:column;align-items:center;transition:align-items 1.25s cubic-bezier(.22,1,.36,1)}
+.pt-sub-label{display:none;font-size:.92rem;font-weight:600;color:var(--mut);line-height:1.15;margin-bottom:2px}
 .pt .wl{display:block;color:#d1d5db;font-size:1.1rem;font-weight:600;opacity:1;max-height:2em;margin-bottom:4px;transition:opacity .55s ease,max-height .65s ease,margin .65s ease}
 .pt h1.nm{color:#fff;font-weight:700;font-size:1.85rem;margin:0;line-height:1.18;transition:font-size 1.25s cubic-bezier(.22,1,.36,1)}
 .pt .note{margin-top:14px;transition:opacity .55s ease}
 
-.pt.settled .pt-stage{min-height:auto;margin-top:10px}
-.pt.settled .pt-hero{padding-top:0;align-items:flex-start;text-align:left}
-.pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px}
+.pt.settled .pt-top-title{display:none}
+.pt.settled .pt-stage{min-height:auto;margin-top:0}
+.pt.settled .pt-hero{padding-top:0;align-items:stretch;text-align:left}
+.pt.settled .pt-brand-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
+.pt.settled .pt-left-group{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
 .pt.settled .plogo{width:52px;transform:translateX(0);flex-shrink:0}
-.pt.settled .pt-name-wrap{align-items:flex-start}
+.pt.settled .pt-name-wrap{align-items:flex-start;min-width:0}
+.pt.settled .pt-sub-label{display:block}
 .pt.settled .wl{opacity:0;max-height:0;margin:0;overflow:hidden;pointer-events:none}
-.pt.settled h1.nm{font-size:1.65rem}
+.pt.settled h1.nm{font-size:1.45rem}
 .pt.settled .note{opacity:0;pointer-events:none}
 
 .nm{color:#ffffff;font-weight:700}
@@ -381,23 +385,31 @@ function render() {
 async function portal() {
   $("#v").innerHTML = `<div class="pt${portalSettled ? " settled" : ""}" id="ptBox">
     <div class="pt-top">
-      <div class="pt-title">Member Portal</div>
-      <button class="menu" id="mn">☰ Menu</button>
+      <div class="pt-top-title">Member Portal</div>
+      <button class="menu" id="mnTop">☰ Menu</button>
     </div>
     <div class="pt-stage">
       <div class="pt-hero">
         <div class="pt-brand-row">
-          <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
-          <div class="pt-name-wrap">
-            <span class="wl">Welcome</span>
-            <h1 class="nm">${esc(me.full_name || "Member")}</h1>
+          <div class="pt-left-group">
+            <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
+            <div class="pt-name-wrap">
+              <span class="pt-sub-label">Member Portal</span>
+              <span class="wl">Welcome</span>
+              <h1 class="nm">${esc(me.full_name || "Member")}</h1>
+            </div>
           </div>
+          <button class="menu" id="mnRow">☰ Menu</button>
         </div>
         ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
       </div>
     </div>
   </div>`;
-  $("#mn").onclick = () => go("menu");
+  const bindMenu = () => {
+    $("#mnTop").onclick = () => go("menu");
+    $("#mnRow").onclick = () => go("menu");
+  };
+  bindMenu();
   if (!portalSettled) {
     requestAnimationFrame(() => setTimeout(() => {
       const box = $("#ptBox");
