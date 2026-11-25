@@ -69,6 +69,7 @@ nav button.on{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--
 .pt .note{position:absolute;bottom:16px;left:0;right:0;margin:0;transition:opacity .45s ease}
 
 .pt.fading .wl,.pt.fading .note{opacity:0}
+.pt.hiding-wl .wl{display:none}
 
 .pt.animating .plogo,.pt.animating .pt-name-wrap{transition:transform 1.15s cubic-bezier(.22,1,.36,1)}
 
@@ -420,7 +421,7 @@ async function portal() {
       setTimeout(() => {
         if (!box || portalSettled) return;
 
-        box.classList.add("settled");
+        box.classList.add("hiding-wl", "settled");
         const tLogo = logo ? logo.getBoundingClientRect() : null;
         const tWrap = wrap ? wrap.getBoundingClientRect() : null;
         const tH1 = h1 ? h1.getBoundingClientRect() : null;
@@ -443,17 +444,19 @@ async function portal() {
         box.offsetHeight;
 
         requestAnimationFrame(() => {
-          if (!box || portalSettled) return;
-          box.classList.add("animating");
-          if (logo) logo.style.transform = "translate3d(0, 0, 0) scale(1)";
-          if (wrap) wrap.style.transform = "translate3d(0, 0, 0) scale(1)";
-          setTimeout(() => {
-            if (!box) return;
-            box.classList.remove("animating", "fading");
-            if (logo) logo.style.transform = "";
-            if (wrap) wrap.style.transform = "";
-            portalSettled = true;
-          }, 1180);
+          requestAnimationFrame(() => {
+            if (!box || portalSettled) return;
+            box.classList.add("animating");
+            if (logo) logo.style.transform = "translate3d(0, 0, 0) scale(1)";
+            if (wrap) wrap.style.transform = "translate3d(0, 0, 0) scale(1)";
+            setTimeout(() => {
+              if (!box) return;
+              box.classList.remove("animating", "fading", "hiding-wl");
+              if (logo) logo.style.transform = "";
+              if (wrap) wrap.style.transform = "";
+              portalSettled = true;
+            }, 1180);
+          });
         });
       }, 450);
     }, 650);
