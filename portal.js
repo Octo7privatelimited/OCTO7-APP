@@ -10,17 +10,89 @@ function go(p, push = true) { if (push && page !== p) hist.push(page); page = p;
 function faTitle() { let l = FA, t = "Founder Administration"; for (const i of faPath) { t = l[i][0]; l = l[i][1]; } return t; }
 function render() {
   const P = PAGES[page], T = page === "fa" ? faTitle() : page === "soon" ? soonT : P.t;
-  app.innerHTML = `<div class="tb">${page === "portal" ? '<b>Member Portal</b><button class="menu" id="mn">☰ Menu</button>' : `<button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b>`}</div>
+  const topBar = page === "portal" ? "" : `<div class="tb"><button class="bk" id="bk" aria-label="Back">←</button><b>${esc(T)}</b></div>`;
+  app.innerHTML = `${topBar}
   <main id="v"><p class="mut">Loading…</p></main>
   <nav>${NAV.map(([k, l]) => `<button data-p="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("")}</nav>`;
-  if ($("#mn")) $("#mn").onclick = () => go("menu");
   if ($("#bk")) $("#bk").onclick = () => { if (page === "fa" && faPath.length) { faPath.pop(); render(); } else go(hist.pop() || "portal", false); };
   app.querySelectorAll("nav button").forEach(b => b.onclick = () => { hist = b.dataset.p === "portal" ? [] : ["portal"]; go(b.dataset.p, false); });
   Promise.resolve().then(() => P.f()).catch(() => {});
 }
-async function portal() {
-  $("#v").innerHTML = `<div class="pt"><img class="plogo" src="globe.webp" alt="" onerror="this.remove()"><h1 class="nm"><span class="wl">Welcome</span><br>${esc(me.full_name || "Member")}</h1>${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}</div>`;
+
+/* Member portal: logo and name zoom in, then glide up into the header (once per login) */
+let _ptUser = null;
+if (typeof sb !== "undefined" && sb && sb.auth && sb.auth.onAuthStateChange) {
+  sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT") _ptUser = null; });
 }
+async function portal() {
+  const who = String(me.member_code || me.user_id || me.id || "");
+  const settled = _ptUser === who;
+  $("#v").innerHTML = `<div class="pt${settled ? " settled" : " entering"}" id="ptBox">
+    <div class="pt-hero">
+      <div class="pt-brand-row">
+        <div class="pt-left">
+          <img class="plogo" src="globe.webp" alt="" onerror="this.remove()">
+          <div class="pt-name-wrap">
+            <span class="wl">Welcome</span>
+            <span class="pt-sub">Member Portal</span>
+            <h1 class="nm">${esc(me.full_name || "Member")}</h1>
+          </div>
+        </div>
+        <button class="menu" id="mn">&#9776; Menu</button>
+      </div>
+      ${me.full_name ? "" : '<p class="note">Add your name in My Profile.</p>'}
+    </div>
+  </div>`;
+  $("#mn").onclick = () => go("menu");
+  if (settled) return;
+
+  const box = $("#ptBox"), logo = $(".plogo", box), nameWrap = $(".pt-name-wrap", box);
+  const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!box || !logo || !nameWrap || reduced) {
+    if (box) { box.classList.remove("entering"); box.classList.add("settled"); }
+    _ptUser = who;
+    return;
+  }
+
+  setTimeout(() => {
+    if (!document.body.contains(box)) return;
+    box.classList.remove("entering");
+
+    // FIRST: where the centred welcome sits now
+    const logoFirst = logo.getBoundingClientRect(), nameFirst = nameWrap.getBoundingClientRect();
+    const wl = $(".wl", box);
+    if (wl) { wl.style.opacity = "0"; wl.style.maxHeight = "0"; wl.style.marginBottom = "0"; }
+
+    // LAST: switch to the header layout
+    box.classList.add("settled");
+    _ptUser = who;
+    const logoLast = logo.getBoundingClientRect(), nameLast = nameWrap.getBoundingClientRect();
+    const dxL = (logoFirst.left + logoFirst.width / 2) - (logoLast.left + logoLast.width / 2);
+    const dyL = (logoFirst.top + logoFirst.height / 2) - (logoLast.top + logoLast.height / 2);
+    const sc = logoLast.width ? logoFirst.width / logoLast.width : 1;
+    const dxN = nameFirst.left - nameLast.left, dyN = nameFirst.top - nameLast.top;
+
+    // INVERT: hold the logo and name at the old spot
+    logo.style.transition = "none"; nameWrap.style.transition = "none";
+    logo.style.transformOrigin = "center center"; nameWrap.style.transformOrigin = "top left";
+    logo.style.transform = `translate3d(${dxL}px, ${dyL}px, 0) scale(${sc})`;
+    nameWrap.style.transform = `translate3d(${dxN}px, ${dyN}px, 0)`;
+
+    // PLAY: glide into the header
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      box.classList.add("animating");
+      logo.style.transition = "transform 1.15s cubic-bezier(.22,1,.36,1)";
+      nameWrap.style.transition = "transform 1.15s cubic-bezier(.22,1,.36,1)";
+      logo.style.transform = "translate3d(0, 0, 0) scale(1)";
+      nameWrap.style.transform = "translate3d(0, 0, 0)";
+      setTimeout(() => {
+        box.classList.remove("animating");
+        [logo, nameWrap].forEach(el => { el.style.transition = ""; el.style.transform = ""; el.style.transformOrigin = ""; });
+      }, 1200);
+    }));
+  }, 1350);
+}
+
 const ICO = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   grid: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
